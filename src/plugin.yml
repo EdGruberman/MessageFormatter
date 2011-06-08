@@ -1,0 +1,22 @@
+name: MessageFormatter
+description: Standardize server message colors and format.
+version: %VERSION%
+depend: [MessageManager]
+author: EdGruberman (ed@rjump.com)
+main: edgruberman.bukkit.messageformatter.Main
+commands:
+    say:
+        description: Broadcasts a message to all players.
+        usage: /<command> <Message>
+    me:
+        description: Describes the player performing an action.
+        usage: /<command> <Message>
+    tell:
+        description: Sends a private message to a player.
+        usage: /<command> <Player> <Message>
+    broadcast:
+        description: Broadcasts a message to all players.
+        usage: /<command> [(+|-)timestamp ][<Level> ]<Message>
+    send:
+        description: Sends a private message to a player.
+        usage: /<command> <Player> [(+|-)timestamp ][<Level> ]<Message>
