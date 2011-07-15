@@ -1,23 +1,19 @@
-﻿level:
-    broadcast: ALL
-    send: ALL
-    log: ALL
 broadcast:
     player:
         chat:
-            priority: NORMAL
+            priority: Normal
             level: INFO
             format: '<%2$s> %1$s' # 1 = Message, 2 = Player Name
         join:
-            priority: NORMAL
+            priority: Normal
             level: CONFIG
             format: '%1$s joined the server.' # 1 = Player Name
         quit:
-            priority: NORMAL
+            priority: Normal
             level: CONFIG
             format: '%1$s left the server.' # 1 = Player Name
         kick:
-            priority: NORMAL
+            priority: Normal
             level: SEVERE
             format: '%1$s was kicked from the server.' # 1 = Player Name
         say:
@@ -43,8 +39,8 @@ send:
             level: INFO
             format: '<<Server>> %1$s' # 1 = Message
 playerLogin:
-    priority: NORMAL
-    format: '-> %1$s'
+    priority: Normal
+    format: '%1$s'
     banned:
         level: SEVERE
         reason: 'Previously banned'

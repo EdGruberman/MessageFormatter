@@ -1,0 +1,9 @@
+send:
+    PLAYER:
+        level: CONFIG
+    SERVER:
+        level: CONFIG
+    WORLD:
+        level: CONFIG
+    LOG:
+        level: CONFIG

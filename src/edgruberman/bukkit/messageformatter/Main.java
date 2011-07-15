@@ -3,66 +3,47 @@ package edgruberman.bukkit.messageformatter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 
 import edgruberman.bukkit.messagemanager.MessageLevel;
 import edgruberman.bukkit.messagemanager.MessageManager;
+import edgruberman.bukkit.messagemanager.channels.ServerChannel;
 
-public class Main extends org.bukkit.plugin.java.JavaPlugin {
+public final class Main extends org.bukkit.plugin.java.JavaPlugin {
     
-    protected static MessageManager messageManager = null;
+    private static ConfigurationFile configurationFile;
+    private static MessageManager messageManager;
     
     public void onLoad() {
-        Configuration.load(this);
+        Main.configurationFile = new ConfigurationFile(this);
+        Main.getConfigurationFile().load();
+        
+        Main.messageManager = new MessageManager(this);
+        Main.getMessageManager().log("Version " + this.getDescription().getVersion());
     }
     
     public void onEnable() {
-        Main.messageManager = new MessageManager(this);
-        Main.messageManager.log("Version " + this.getDescription().getVersion());
-
+        new PlayerListener(this);
         new CommandManager(this);
-        
-        this.registerEvents();
-        
         Main.messageManager.log("Plugin Enabled");
     }
     
     public void onDisable() {
         Main.messageManager.log("Plugin Disabled");
-        Main.messageManager = null;
     }
     
-    private void registerEvents() {
-        org.bukkit.plugin.PluginManager pluginManager = this.getServer().getPluginManager();
-        PlayerListener playerListener = new PlayerListener(this);
-        
-        pluginManager.registerEvent(Event.Type.PLAYER_JOIN, playerListener, this.getEventPriority("broadcast.player.join"), this);
-        pluginManager.registerEvent(Event.Type.PLAYER_CHAT, playerListener, this.getEventPriority("broadcast.player.chat"), this);
-        pluginManager.registerEvent(Event.Type.PLAYER_QUIT, playerListener, this.getEventPriority("broadcast.player.quit"), this);
-        pluginManager.registerEvent(Event.Type.PLAYER_KICK, playerListener, this.getEventPriority("broadcast.player.kick"), this);
-        pluginManager.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, this.getEventPriority("playerLogin"), this);
+    static ConfigurationFile getConfigurationFile() {
+        return Main.configurationFile;
     }
     
-    private Event.Priority getEventPriority(String path) {
-        return Main.parseEventPriority(this.getConfiguration().getString(path + ".priority"));
+    static MessageManager getMessageManager() {
+        return Main.messageManager;
     }
     
-    private static Event.Priority parseEventPriority(String name) {
-            if (name.toUpperCase().equals("LOWEST"))  return Event.Priority.Lowest;
-       else if (name.toUpperCase().equals("LOW"))     return Event.Priority.Low;
-       else if (name.toUpperCase().equals("NORMAL"))  return Event.Priority.Normal;
-       else if (name.toUpperCase().equals("HIGH"))    return Event.Priority.High;
-       else if (name.toUpperCase().equals("HIGHEST")) return Event.Priority.Highest;
-       else if (name.toUpperCase().equals("MONITOR")) return Event.Priority.Monitor;
-       
-       return null;
-    }
-    
-    protected String formatChat(Player player, String message) {
+    String formatChat(Player player, String message) {
         return this.formatChat(player, message, null);
     }
     
-    protected String formatChat(Player player, String message, ChatColor color) {
+    String formatChat(Player player, String message, ChatColor color) {
         String type;
         String name = null;
         if (player != null) {
@@ -75,12 +56,14 @@ public class Main extends org.bukkit.plugin.java.JavaPlugin {
         if (color != null)
             message = color + message;
         
-        return Main.messageManager.formatBroadcast(this.getMessageLevel("broadcast." + type + ".chat")
+        return Main.getMessageManager().format(
+                ServerChannel.getInstance(this.getServer())
+                , this.getMessageLevel("broadcast." + type + ".chat")
                 , String.format(this.getMessageFormat("broadcast." + type + ".chat"), message, name)
         );
     }
     
-    protected void broadcastSay(CommandSender sender, String message) {
+    void broadcastSay(CommandSender sender, String message) {
         String type;
         String name = null;
         if (sender instanceof Player) {
@@ -90,13 +73,13 @@ public class Main extends org.bukkit.plugin.java.JavaPlugin {
             type = "server";
         }
         
-        Main.messageManager.broadcast(
-                this.getMessageLevel("broadcast." + type + ".say")
-                , String.format(this.getMessageFormat("broadcast." + type + ".say"), message, name)
+        Main.getMessageManager().broadcast(
+                String.format(this.getMessageFormat("broadcast." + type + ".say"), message, name)
+                , this.getMessageLevel("broadcast." + type + ".say")
         );
     }
     
-    protected void broadcastMe(CommandSender sender, String message) {
+    void broadcastMe(CommandSender sender, String message) {
         String type;
         String name = null;
         if (sender instanceof Player) {
@@ -106,13 +89,13 @@ public class Main extends org.bukkit.plugin.java.JavaPlugin {
             type = "server";
         }
         
-        Main.messageManager.broadcast(
-                this.getMessageLevel("broadcast." + type + ".me")
-                , String.format(this.getMessageFormat("broadcast." + type + ".me"), message, name)
+        Main.getMessageManager().broadcast(
+                String.format(this.getMessageFormat("broadcast." + type + ".me"), message, name)
+                , this.getMessageLevel("broadcast." + type + ".me")
         );
     }
     
-    protected void sendTell(CommandSender sender, Player target, String message) {
+    void sendTell(CommandSender sender, Player target, String message) {
         String type;
         String name = null;
         if (sender instanceof Player) {
@@ -122,18 +105,18 @@ public class Main extends org.bukkit.plugin.java.JavaPlugin {
             type = "server";
         }
         
-        Main.messageManager.send(
+        Main.getMessageManager().send(
                 target
-                , this.getMessageLevel("send." + type + ".tell")
                 , String.format(this.getMessageFormat("send." + type + ".tell"), message, name)
+                , this.getMessageLevel("send." + type + ".tell")
         );
     }
     
-    protected MessageLevel getMessageLevel(String path) {
+    MessageLevel getMessageLevel(String path) {
         return MessageLevel.parse(this.getConfiguration().getString(path + ".level"));
     }
     
-    protected String getMessageFormat(String path) {
+    String getMessageFormat(String path) {
         return this.getConfiguration().getString(path + ".format");
     }
 }

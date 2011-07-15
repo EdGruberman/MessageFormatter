@@ -25,9 +25,10 @@ public class CommandManager implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] split) {
-        Main.messageManager.log(MessageLevel.FINE
-                , ((sender instanceof Player) ? ((Player) sender).getName() : "CONSOLE")
-                + " issued command: " + label + " " + this.join(split)
+        Main.getMessageManager().log(
+                ((sender instanceof Player) ? ((Player) sender).getName() : "CONSOLE")
+                    + " issued command: " + label + " " + this.join(split)
+                , MessageLevel.FINE
         );
         
         if (label.toLowerCase().equals("say"))
@@ -50,7 +51,7 @@ public class CommandManager implements CommandExecutor {
     
     private boolean executeSay(CommandSender sender, String message) {
         if (message.length() == 0) {
-            Main.messageManager.respond(sender, MessageLevel.SEVERE, "Syntax Error: /say <Message>");
+            Main.getMessageManager().respond(sender, "Syntax Error: /say <Message>", MessageLevel.SEVERE);
             return true;
         }
         
@@ -61,7 +62,7 @@ public class CommandManager implements CommandExecutor {
     
     private boolean executeMe(CommandSender sender, String message) {
         if (message.length() == 0) {
-            Main.messageManager.respond(sender, MessageLevel.SEVERE, "Syntax Error: /me <Message>");
+            Main.getMessageManager().respond(sender, "Syntax Error: /me <Message>", MessageLevel.SEVERE);
             return true;
         }
         
@@ -73,14 +74,14 @@ public class CommandManager implements CommandExecutor {
     private boolean executeTell(CommandSender sender, String text) {
         String[] split = text.split(" ", 2);
         if (split.length < 2) {
-            Main.messageManager.respond(sender, MessageLevel.SEVERE, "Syntax Error: /tell <Player> <Message>");
+            Main.getMessageManager().respond(sender, "Syntax Error: /tell <Player> <Message>", MessageLevel.SEVERE);
             return true;
         }
         
         String recipient = split[0];
         Player target = this.plugin.getServer().getPlayer(recipient);
         if (target == null) {
-            Main.messageManager.respond(sender, MessageLevel.SEVERE, "There's no player by the name of \"" + recipient + "\" online.");
+            Main.getMessageManager().respond(sender, "There's no player by the name of \"" + recipient + "\" online.", MessageLevel.SEVERE);
             return true;
         }
            
@@ -93,7 +94,7 @@ public class CommandManager implements CommandExecutor {
         if (!sender.isOp()) return false;
         
         if (text.length() == 0) {
-            Main.messageManager.respond(sender, MessageLevel.SEVERE, "Syntax Error: /broadcast [(+|-)timestamp ][<Level> ]<Message>");
+            Main.getMessageManager().respond(sender, "Syntax Error: /broadcast [(+|-)timestamp ][<Level> ]<Message>", MessageLevel.SEVERE);
             return true;
         }
         
@@ -113,7 +114,7 @@ public class CommandManager implements CommandExecutor {
             message = split[2];
         }
         
-        Main.messageManager.broadcast(level, message.trim(), isTimestamped);
+        Main.getMessageManager().broadcast(message.trim(), level, isTimestamped);
         
         return true;
     }
@@ -123,14 +124,14 @@ public class CommandManager implements CommandExecutor {
         
         String[] split = text.split(" ", 2);
         if (split.length < 2) {
-            Main.messageManager.respond(sender, MessageLevel.SEVERE, "Syntax Error: /send <Player> [(+|-)timestamp ][<Level> ]<Message>");
+            Main.getMessageManager().respond(sender, "Syntax Error: /send <Player> [(+|-)timestamp ][<Level> ]<Message>", MessageLevel.SEVERE);
             return true;
         }
         
         String recipient = split[0];
         Player target = this.plugin.getServer().getPlayer(recipient);
         if (target == null) {
-            Main.messageManager.respond(sender, MessageLevel.SEVERE, "There's no player by the name of \"" + recipient + "\" online.");
+            Main.getMessageManager().respond(sender, "There's no player by the name of \"" + recipient + "\" online.", MessageLevel.SEVERE);
             return true;
         }
         
@@ -151,7 +152,7 @@ public class CommandManager implements CommandExecutor {
             message = splitMessage[2];
         }
         
-        Main.messageManager.send(target, level, message.trim(), isTimestamped);
+        Main.getMessageManager().send(target, message.trim(), level, isTimestamped);
         
         return true;
     }
