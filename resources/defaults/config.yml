@@ -1,55 +1,39 @@
-broadcast:
-    player:
-        chat:
-            priority: Normal
-            level: INFO
-            format: '<%2$s> %1$s' # 1 = Message, 2 = Player Name
-        join:
-            priority: Normal
-            level: CONFIG
-            format: '%1$s joined the server.' # 1 = Player Name
-        quit:
-            priority: Normal
-            level: CONFIG
-            format: '%1$s left the server.' # 1 = Player Name
-        kick:
-            priority: Normal
-            level: SEVERE
-            format: '%1$s was kicked from the server.' # 1 = Player Name
-        say:
-            level: INFO
-            format: '<%2$s> %1$s' # 1 = Message, 2 = Player Name
-        me:
-            level: INFO
-            format: '* %2$s %1s' # 1 = Message, 2 = Player Name
-    server:
-        say:
-            level: INFO
-            format: '<<Server>> %1$s' # 1 = Message
-        me:
-            level: INFO
-            format: '* <Server> %1s' # 1 = Message
-send:
-    player:
-        tell:
-            level: INFO
-            format: '<%2$s> %1$s' # 1 = Message, 2 = Player Name
-    server:
-        tell: 
-            level: INFO
-            format: '<<Server>> %1$s' # 1 = Message
-playerLogin:
+say:
+    level: INFO
+    format: '<%2$s> %1$s' # 1 = Message, 2 = Player Name
+me:
+    level: INFO
+    format: '* %2$s %1s' # 1 = Message, 2 = Player Name
+tell:
+    level: INFO
+    format: '<%2$s> %1$s' # 1 = Message, 2 = Player Name
+PLAYER_CHAT:
     priority: Normal
-    format: '%1$s'
-    banned:
+    level: INFO
+    format: '<%2$s> %1$s' # 1 = Message, 2 = Player Name
+PLAYER_JOIN:
+    priority: Normal
+    level: CONFIG
+    format: '%1$s joined the server.' # 1 = Player Name
+PLAYER_QUIT:
+    priority: Normal
+    level: CONFIG
+    format: '%1$s left the server.' # 1 = Player Name
+PLAYER_KICK:
+    priority: Normal
+    level: SEVERE
+    format: '%1$s was kicked from the server.' # 1 = Player Name
+PLAYER_LOGIN:
+    priority: Normal
+    KICK_BANNED:
         level: SEVERE
-        reason: 'Previously banned'
-    full:
+        format: 'You were previously banned'
+    KICK_FULL:
         level: NOTICE
-        reason: 'Too many players'
-    whitelist:
+        format: 'There are too many players right now'
+    KICK_WHITELIST:
         level: WARNING
-        reason: 'Not on whitelist'
-    other:
+        format: 'You are not on the whitelist'
+    KICK_OTHER:
         level: SEVERE
-        reason: 'Unknown reason'
+        format: 'You have been kicked'

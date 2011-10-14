@@ -7,93 +7,72 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import edgruberman.bukkit.messagemanager.MessageLevel;
 
-public class PlayerListener extends org.bukkit.event.player.PlayerListener {
+final class PlayerListener extends org.bukkit.event.player.PlayerListener {
     
-    private Main plugin;
-    
-    protected PlayerListener(Main plugin) {
-        this.plugin = plugin;
+    PlayerListener(final JavaPlugin plugin) {
+        org.bukkit.plugin.PluginManager pluginManager = plugin.getServer().getPluginManager();
         
-        org.bukkit.plugin.PluginManager pluginManager = this.plugin.getServer().getPluginManager();
-        
-        pluginManager.registerEvent(Event.Type.PLAYER_JOIN, this, this.getEventPriority("broadcast.player.join"), this.plugin);
-        pluginManager.registerEvent(Event.Type.PLAYER_CHAT, this, this.getEventPriority("broadcast.player.chat"), this.plugin);
-        pluginManager.registerEvent(Event.Type.PLAYER_QUIT, this, this.getEventPriority("broadcast.player.quit"), this.plugin);
-        pluginManager.registerEvent(Event.Type.PLAYER_KICK, this, this.getEventPriority("broadcast.player.kick"), this.plugin);
-        pluginManager.registerEvent(Event.Type.PLAYER_LOGIN, this, this.getEventPriority("playerLogin"), this.plugin);
+        pluginManager.registerEvent(Event.Type.PLAYER_JOIN, this, Main.getEventPriority("PLAYER_JOIN"), plugin);
+        pluginManager.registerEvent(Event.Type.PLAYER_CHAT, this, Main.getEventPriority("PLAYER_CHAT"), plugin);
+        pluginManager.registerEvent(Event.Type.PLAYER_QUIT, this, Main.getEventPriority("PLAYER_QUIT"), plugin);
+        pluginManager.registerEvent(Event.Type.PLAYER_KICK, this, Main.getEventPriority("PLAYER_KICK"), plugin);
+        pluginManager.registerEvent(Event.Type.PLAYER_LOGIN, this, Main.getEventPriority("PLAYER_LOGIN"), plugin);
     }
-    
-    private Event.Priority getEventPriority(String path) {
-        return Event.Priority.valueOf(Main.getConfigurationFile().getConfiguration().getString(path + ".priority"));
-    }
-    
-    public void onPlayerLogin(PlayerLoginEvent event) {
-        if (event.getResult().equals(Result.ALLOWED)) return;
-        
-        MessageLevel level = this.plugin.getMessageLevel("playerLogin.other");
-        String message = this.plugin.getConfiguration().getString("playerLogon.other.reason");
-        switch (event.getResult()) {
-            case KICK_BANNED:
-                level = this.plugin.getMessageLevel("playerLogin.banned");
-                message = String.format(this.plugin.getMessageFormat("playerLogin")
-                        , this.plugin.getConfiguration().getString("playerLogon.banned.reason"));
-            case KICK_FULL:
-                level = this.plugin.getMessageLevel("playerLogin.full");
-                message = String.format(this.plugin.getMessageFormat("playerLogin")
-                        , this.plugin.getConfiguration().getString("playerLogon.full.reason"));
-            case KICK_WHITELIST:
-                level = this.plugin.getMessageLevel("playerLogin.whitelist");
-                message = String.format(this.plugin.getMessageFormat("playerLogin")
-                        , this.plugin.getConfiguration().getString("playerLogon.whitelist.reason"));
-        }
-        
-        event.setKickMessage(message);
-        Main.getMessageManager().log(message, level);
-     }
     
     @Override
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Main.getMessageManager().broadcast(
-                String.format(this.plugin.getMessageFormat("broadcast.player.join"), event.getPlayer().getDisplayName())
-                , this.plugin.getMessageLevel("broadcast.player.join")
+    public void onPlayerLogin(final PlayerLoginEvent event) {
+        if (event.getResult().equals(Result.ALLOWED)) return;
+        
+        MessageLevel level = Main.getMessageLevel(event.getType().name() + "." + event.getResult().name());
+        String message = Main.getMessageFormat(event.getType().name() + "." + event.getResult().name());
+        
+        event.setKickMessage(message);
+        Main.messageManager.log(message, level);
+    }
+    
+    @Override
+    public void onPlayerJoin(final PlayerJoinEvent event) {
+        Main.messageManager.broadcast(
+                String.format(Main.getMessageFormat(event.getType().name()), event.getPlayer().getDisplayName())
+                , Main.getMessageLevel(event.getType().name())
         );
         
         event.setJoinMessage(null);
     }
     
     @Override
-    public void onPlayerChat(PlayerChatEvent event) {
+    public void onPlayerChat(final PlayerChatEvent event) {
         if (event.isCancelled()) return;
         
-        Main.getMessageManager().broadcast(
-                String.format(this.plugin.getMessageFormat("broadcast.player.chat"), event.getMessage(), event.getPlayer().getDisplayName())
-                , this.plugin.getMessageLevel("broadcast.player.chat")
+        Main.messageManager.broadcast(
+                String.format(Main.getMessageFormat(event.getType().name()), event.getMessage(), event.getPlayer().getDisplayName())
+                , Main.getMessageLevel(event.getType().name())
         );
         
-        //event.setFormat("");
         event.setCancelled(true);
     }
     
     @Override
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        Main.getMessageManager().broadcast(
-                String.format(this.plugin.getMessageFormat("broadcast.player.quit"), event.getPlayer().getDisplayName())
-                , this.plugin.getMessageLevel("broadcast.player.quit")
+    public void onPlayerQuit(final PlayerQuitEvent event) {
+        Main.messageManager.broadcast(
+                String.format(Main.getMessageFormat(event.getType().name()), event.getPlayer().getDisplayName())
+                , Main.getMessageLevel(event.getType().name())
         );
         
         event.setQuitMessage(null);
     }
     
     @Override
-    public void onPlayerKick(PlayerKickEvent event) {
+    public void onPlayerKick(final PlayerKickEvent event) {
         if (event.isCancelled()) return;
         
-        Main.getMessageManager().broadcast(
-                String.format(this.plugin.getMessageFormat("broadcast.player.kick"), event.getPlayer().getDisplayName())
-                , this.plugin.getMessageLevel("broadcast.player.kick")
+        Main.messageManager.broadcast(
+                String.format(Main.getMessageFormat(event.getType().name()), event.getPlayer().getDisplayName())
+                , Main.getMessageLevel(event.getType().name())
         );
         
         event.setLeaveMessage(null);

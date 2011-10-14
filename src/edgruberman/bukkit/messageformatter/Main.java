@@ -1,24 +1,23 @@
 package edgruberman.bukkit.messageformatter;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import edgruberman.bukkit.messagemanager.MessageLevel;
 import edgruberman.bukkit.messagemanager.MessageManager;
-import edgruberman.bukkit.messagemanager.channels.ServerChannel;
 
-public final class Main extends org.bukkit.plugin.java.JavaPlugin {
+public final class Main extends JavaPlugin {
     
-    private static ConfigurationFile configurationFile;
-    private static MessageManager messageManager;
+    static ConfigurationFile configurationFile;
+    static MessageManager messageManager;
     
     public void onLoad() {
-        Main.configurationFile = new ConfigurationFile(this);
-        Main.getConfigurationFile().load();
-        
         Main.messageManager = new MessageManager(this);
-        Main.getMessageManager().log("Version " + this.getDescription().getVersion());
+        Main.messageManager.log("Version " + this.getDescription().getVersion());
+
+        Main.configurationFile = new ConfigurationFile(this);
     }
     
     public void onEnable() {
@@ -31,92 +30,46 @@ public final class Main extends org.bukkit.plugin.java.JavaPlugin {
         Main.messageManager.log("Plugin Disabled");
     }
     
-    static ConfigurationFile getConfigurationFile() {
-        return Main.configurationFile;
-    }
-    
-    static MessageManager getMessageManager() {
-        return Main.messageManager;
-    }
-    
-    String formatChat(Player player, String message) {
-        return this.formatChat(player, message, null);
-    }
-    
-    String formatChat(Player player, String message, ChatColor color) {
-        String type;
-        String name = null;
-        if (player != null) {
-            type = "player";
-            name = player.getDisplayName();
-        } else {
-            type = "server";
-        }
+    static void say(final CommandSender sender, final String message) {
+        String name = sender.getName();
+        if (sender instanceof Player) name = ((Player) sender).getDisplayName();
         
-        if (color != null)
-            message = color + message;
-        
-        return Main.getMessageManager().format(
-                ServerChannel.getInstance(this.getServer())
-                , this.getMessageLevel("broadcast." + type + ".chat")
-                , String.format(this.getMessageFormat("broadcast." + type + ".chat"), message, name)
+        Main.messageManager.broadcast(
+                String.format(Main.getMessageFormat("say"), message, name)
+                , Main.getMessageLevel("say")
         );
     }
     
-    void broadcastSay(CommandSender sender, String message) {
-        String type;
-        String name = null;
-        if (sender instanceof Player) {
-            type = "player";
-            name = ((Player) sender).getDisplayName();
-        } else {
-            type = "server";
-        }
+    static void me(final CommandSender sender, final String message) {
+        String name = sender.getName();
+        if (sender instanceof Player) name = ((Player) sender).getDisplayName();
         
-        Main.getMessageManager().broadcast(
-                String.format(this.getMessageFormat("broadcast." + type + ".say"), message, name)
-                , this.getMessageLevel("broadcast." + type + ".say")
+        Main.messageManager.broadcast(
+                String.format(Main.getMessageFormat("me"), message, name)
+                , Main.getMessageLevel("me")
         );
     }
     
-    void broadcastMe(CommandSender sender, String message) {
-        String type;
-        String name = null;
-        if (sender instanceof Player) {
-            type = "player";
-            name = ((Player) sender).getDisplayName();
-        } else {
-            type = "server";
-        }
+    static void tell(final CommandSender sender, final Player target, final String message) {
+        String name = sender.getName();
+        if (sender instanceof Player) name = ((Player) sender).getDisplayName();
         
-        Main.getMessageManager().broadcast(
-                String.format(this.getMessageFormat("broadcast." + type + ".me"), message, name)
-                , this.getMessageLevel("broadcast." + type + ".me")
-        );
-    }
-    
-    void sendTell(CommandSender sender, Player target, String message) {
-        String type;
-        String name = null;
-        if (sender instanceof Player) {
-            type = "player";
-            name = ((Player) sender).getDisplayName();
-        } else {
-            type = "server";
-        }
-        
-        Main.getMessageManager().send(
+        Main.messageManager.send(
                 target
-                , String.format(this.getMessageFormat("send." + type + ".tell"), message, name)
-                , this.getMessageLevel("send." + type + ".tell")
+                , String.format(Main.getMessageFormat("tell"), message, name)
+                , Main.getMessageLevel("tell")
         );
     }
     
-    MessageLevel getMessageLevel(String path) {
-        return MessageLevel.parse(this.getConfiguration().getString(path + ".level"));
+    static MessageLevel getMessageLevel(final String path) {
+        return MessageLevel.parse(Main.configurationFile.getConfiguration().getString(path + ".level"));
     }
     
-    String getMessageFormat(String path) {
-        return this.getConfiguration().getString(path + ".format");
+    static String getMessageFormat(final String path) {
+        return Main.configurationFile.getConfiguration().getString(path + ".format");
+    }
+    
+    static Event.Priority getEventPriority(final String path) {
+        return Event.Priority.valueOf(Main.configurationFile.getConfiguration().getString(path + ".priority"));
     }
 }

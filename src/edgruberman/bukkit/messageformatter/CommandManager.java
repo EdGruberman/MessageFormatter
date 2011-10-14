@@ -3,98 +3,97 @@ package edgruberman.bukkit.messageformatter;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import edgruberman.bukkit.messagemanager.MessageLevel;
 
-public class CommandManager implements CommandExecutor {
-    private Main plugin;
+final class CommandManager implements CommandExecutor {
 
-    protected CommandManager (Main plugin) {
-        this.plugin = plugin;
-        
-        this.plugin.getCommand("say").setExecutor(this);
-        this.plugin.getCommand("me").setExecutor(this);
-        this.plugin.getCommand("tell").setExecutor(this);
-        this.plugin.getCommand("broadcast").setExecutor(this);
-        this.plugin.getCommand("send").setExecutor(this);
+    CommandManager (JavaPlugin plugin) {
+        plugin.getCommand("say").setExecutor(this);
+        plugin.getCommand("me").setExecutor(this);
+        plugin.getCommand("tell").setExecutor(this);
+        plugin.getCommand("broadcast").setExecutor(this);
+        plugin.getCommand("send").setExecutor(this);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] split) {
-        Main.getMessageManager().log(
+        Main.messageManager.log(
                 ((sender instanceof Player) ? ((Player) sender).getName() : "CONSOLE")
-                    + " issued command: " + label + " " + this.join(split)
+                    + " issued command: " + label + " " + CommandManager.join(split)
                 , MessageLevel.FINE
         );
         
         if (label.toLowerCase().equals("say"))
-            return this.executeSay(sender, this.join(split));
+            return CommandManager.executeSay(sender, CommandManager.join(split));
         
         else if (label.toLowerCase().equals("me"))
-            return this.executeMe(sender, this.join(split));
+            return CommandManager.executeMe(sender, CommandManager.join(split));
         
         else if (label.toLowerCase().equals("tell"))
-            return this.executeTell(sender, this.join(split));
+            return CommandManager.executeTell(sender, CommandManager.join(split));
         
         else if (label.toLowerCase().equals("broadcast"))
-            return this.executeBroadcast(sender, this.join(split));
+            return CommandManager.executeBroadcast(sender, CommandManager.join(split));
         
         else if (label.toLowerCase().equals("send"))
-            return this.executeSend(sender, this.join(split));
+            return CommandManager.executeSend(sender, CommandManager.join(split));
         
         return false;
     }
     
-    private boolean executeSay(CommandSender sender, String message) {
+    private static boolean executeSay(final CommandSender sender, final String message) {
         if (message.length() == 0) {
-            Main.getMessageManager().respond(sender, "Syntax Error: /say <Message>", MessageLevel.SEVERE);
+            Main.messageManager.respond(sender, "Syntax Error: /say <Message>", MessageLevel.SEVERE);
             return true;
         }
         
-        this.plugin.broadcastSay(sender, message.trim());
+        Main.say(sender, message.trim());
         
         return true;
     }
     
-    private boolean executeMe(CommandSender sender, String message) {
+    private static boolean executeMe(final CommandSender sender, final String message) {
         if (message.length() == 0) {
-            Main.getMessageManager().respond(sender, "Syntax Error: /me <Message>", MessageLevel.SEVERE);
+            Main.messageManager.respond(sender, "Syntax Error: /me <Message>", MessageLevel.SEVERE);
             return true;
         }
         
-        this.plugin.broadcastMe(sender, message.trim());
+        Main.me(sender, message.trim());
         
         return true;
     }
     
-    private boolean executeTell(CommandSender sender, String text) {
+    private static boolean executeTell(final CommandSender sender, final String text) {
         String[] split = text.split(" ", 2);
         if (split.length < 2) {
-            Main.getMessageManager().respond(sender, "Syntax Error: /tell <Player> <Message>", MessageLevel.SEVERE);
+            Main.messageManager.respond(sender, "Syntax Error: /tell <Player> <Message>", MessageLevel.SEVERE);
             return true;
         }
         
         String recipient = split[0];
-        Player target = this.plugin.getServer().getPlayer(recipient);
+        Player target = Bukkit.getServer().getPlayer(recipient);
         if (target == null) {
-            Main.getMessageManager().respond(sender, "There's no player by the name of \"" + recipient + "\" online.", MessageLevel.SEVERE);
+            Main.messageManager.respond(sender, "There's no player by the name of \"" + recipient + "\" online.", MessageLevel.SEVERE);
             return true;
         }
            
-        this.plugin.sendTell(sender, target, split[1].trim());
+        Main.tell(sender, target, split[1].trim());
         
         return true;
     }
     
-    private boolean executeBroadcast(CommandSender sender, String text) {
+    private static boolean executeBroadcast(final CommandSender sender, final String text) {
         if (!sender.isOp()) return false;
         
         if (text.length() == 0) {
-            Main.getMessageManager().respond(sender, "Syntax Error: /broadcast [(+|-)timestamp ][<Level> ]<Message>", MessageLevel.SEVERE);
+            Main.messageManager.respond(sender, "Syntax Error: /broadcast [(+|-)timestamp ][<Level> ]<Message>", MessageLevel.SEVERE);
             return true;
         }
         
@@ -114,24 +113,24 @@ public class CommandManager implements CommandExecutor {
             message = split[2];
         }
         
-        Main.getMessageManager().broadcast(message.trim(), level, isTimestamped);
+        Main.messageManager.broadcast(message.trim(), level, isTimestamped);
         
         return true;
     }
     
-    private boolean executeSend(CommandSender sender, String text) {
+    private static boolean executeSend(final CommandSender sender, final String text) {
         if (!sender.isOp()) return false;
         
         String[] split = text.split(" ", 2);
         if (split.length < 2) {
-            Main.getMessageManager().respond(sender, "Syntax Error: /send <Player> [(+|-)timestamp ][<Level> ]<Message>", MessageLevel.SEVERE);
+            Main.messageManager.respond(sender, "Syntax Error: /send <Player> [(+|-)timestamp ][<Level> ]<Message>", MessageLevel.SEVERE);
             return true;
         }
         
         String recipient = split[0];
-        Player target = this.plugin.getServer().getPlayer(recipient);
+        Player target = Bukkit.getServer().getPlayer(recipient);
         if (target == null) {
-            Main.getMessageManager().respond(sender, "There's no player by the name of \"" + recipient + "\" online.", MessageLevel.SEVERE);
+            Main.messageManager.respond(sender, "There's no player by the name of \"" + recipient + "\" online.", MessageLevel.SEVERE);
             return true;
         }
         
@@ -152,16 +151,16 @@ public class CommandManager implements CommandExecutor {
             message = splitMessage[2];
         }
         
-        Main.getMessageManager().send(target, message.trim(), level, isTimestamped);
+        Main.messageManager.send(target, message.trim(), level, isTimestamped);
         
         return true;
     }
     
-    private String join(String[] s) {
-        return this.join(Arrays.asList(s), " ");
+    private static String join(final String[] s) {
+        return CommandManager.join(Arrays.asList(s), " ");
     }
     
-    private String join(List<String> list, String delim) {
+    private static String join(final List<String> list, final String delim) {
         if (list == null || list.isEmpty()) return "";
      
         StringBuilder sb = new StringBuilder();
