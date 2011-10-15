@@ -20,3 +20,6 @@ commands:
     send:
         description: Sends a private message to a player.
         usage: /<command> <Player> [(+|-)timestamp ][<Level> ]<Message>
+    messageformatter:
+        description: Manage plugin settings.
+        usage: /<command> reload - Reload plugin configuration.

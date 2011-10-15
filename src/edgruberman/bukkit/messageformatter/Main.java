@@ -1,6 +1,7 @@
 package edgruberman.bukkit.messageformatter;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,6 +24,7 @@ public final class Main extends JavaPlugin {
     }
     
     public void onEnable() {
+        Main.configurationFile.load();
         new PlayerListener(this);
         new CommandManager(this);
         Main.messageManager.log("Plugin Enabled");
@@ -34,6 +36,7 @@ public final class Main extends JavaPlugin {
     
     static void say(final CommandSender sender, final String message) {
         String name = sender.getName();
+        if (sender instanceof ConsoleCommandSender) name = Main.configurationFile.getConfiguration().getString("ConsoleCommandSender.name", name);
         if (sender instanceof Player) name = ((Player) sender).getDisplayName();
         
         Main.messageManager.broadcast(
@@ -44,6 +47,7 @@ public final class Main extends JavaPlugin {
     
     static void me(final CommandSender sender, final String message) {
         String name = sender.getName();
+        if (sender instanceof ConsoleCommandSender) name = Main.configurationFile.getConfiguration().getString("ConsoleCommandSender.name", name);
         if (sender instanceof Player) name = ((Player) sender).getDisplayName();
         
         Main.messageManager.broadcast(
@@ -54,6 +58,7 @@ public final class Main extends JavaPlugin {
     
     static void tell(final CommandSender sender, final Player target, final String message) {
         String name = sender.getName();
+        if (sender instanceof ConsoleCommandSender) name = Main.configurationFile.getConfiguration().getString("ConsoleCommandSender.name", name);
         if (sender instanceof Player) name = ((Player) sender).getDisplayName();
         
         Main.messageManager.send(

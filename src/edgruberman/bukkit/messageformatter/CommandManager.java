@@ -20,6 +20,7 @@ final class CommandManager implements CommandExecutor {
         plugin.getCommand("tell").setExecutor(this);
         plugin.getCommand("broadcast").setExecutor(this);
         plugin.getCommand("send").setExecutor(this);
+        plugin.getCommand("messageformatter").setExecutor(this);
     }
 
     @Override
@@ -45,7 +46,24 @@ final class CommandManager implements CommandExecutor {
         else if (label.toLowerCase().equals("send"))
             return CommandManager.executeSend(sender, CommandManager.join(split));
         
+        else if (label.toLowerCase().equals("messageformatter"))
+            return CommandManager.executeMessageFormatter(sender, CommandManager.join(split));
+        
         return false;
+    }
+    
+    private static boolean executeMessageFormatter(final CommandSender sender, final String parameters) {
+        if (!sender.isOp()) return true;
+        
+        if (parameters.length() == 0) {
+            Main.messageManager.respond(sender, "Syntax Error: /messageformatter reload", MessageLevel.SEVERE);
+            return true;
+        }
+        
+        Main.configurationFile.load();
+        Main.messageManager.respond(sender, "MessageFormatter configuration reloaded.", MessageLevel.CONFIG);
+        
+        return true;
     }
     
     private static boolean executeSay(final CommandSender sender, final String message) {
@@ -90,7 +108,7 @@ final class CommandManager implements CommandExecutor {
     }
     
     private static boolean executeBroadcast(final CommandSender sender, final String text) {
-        if (!sender.isOp()) return false;
+        if (!sender.isOp()) return true;
         
         if (text.length() == 0) {
             Main.messageManager.respond(sender, "Syntax Error: /broadcast [(+|-)timestamp ][<Level> ]<Message>", MessageLevel.SEVERE);
@@ -119,7 +137,7 @@ final class CommandManager implements CommandExecutor {
     }
     
     private static boolean executeSend(final CommandSender sender, final String text) {
-        if (!sender.isOp()) return false;
+        if (!sender.isOp()) return true;
         
         String[] split = text.split(" ", 2);
         if (split.length < 2) {

@@ -37,3 +37,5 @@ PLAYER_LOGIN:
     KICK_OTHER:
         level: SEVERE
         format: 'You have been kicked'
+ConsoleCommandSender:
+    name: '<Console>'

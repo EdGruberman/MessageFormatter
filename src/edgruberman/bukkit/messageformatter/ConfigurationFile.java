@@ -119,8 +119,6 @@ public final class ConfigurationFile {
         } else {
             this.configuration = new Configuration(this.file);
         }
-        
-        this.load();
     }
     
     /**
