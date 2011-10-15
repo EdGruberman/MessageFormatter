@@ -10,6 +10,8 @@ import edgruberman.bukkit.messagemanager.MessageManager;
 
 public final class Main extends JavaPlugin {
     
+    final static String eventPrefix = "MessageFormatter"; 
+    
     static ConfigurationFile configurationFile;
     static MessageManager messageManager;
     

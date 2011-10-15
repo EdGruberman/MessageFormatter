@@ -1,5 +1,6 @@
 package edgruberman.bukkit.messageformatter;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -48,12 +49,14 @@ final class PlayerListener extends org.bukkit.event.player.PlayerListener {
     public void onPlayerChat(final PlayerChatEvent event) {
         if (event.isCancelled()) return;
         
-        Main.messageManager.broadcast(
-                String.format(Main.getMessageFormat(event.getType().name()), event.getMessage(), event.getPlayer().getDisplayName())
-                , Main.getMessageLevel(event.getType().name())
-        );
-        
         event.setCancelled(true);
+        
+        PlayerChat custom = new PlayerChat(event.getPlayer(), event.getMessage());
+        Bukkit.getServer().getPluginManager().callEvent(custom);
+        if (custom.isCancelled()) return;
+        
+        String message = String.format(Main.getMessageFormat(event.getType().name()), event.getMessage(), event.getPlayer().getDisplayName());
+        Main.messageManager.broadcast(message, Main.getMessageLevel(event.getType().name()));
     }
     
     @Override
