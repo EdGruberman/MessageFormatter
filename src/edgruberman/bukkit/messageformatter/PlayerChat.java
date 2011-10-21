@@ -6,7 +6,7 @@ import org.bukkit.event.Event;
 
 public class PlayerChat extends Event implements Cancellable {
     
-    public final static String NAME = Main.eventPrefix + ".PLAYER_CHAT";
+    public final static String NAME = Main.EVENT_PREFIX + ".PLAYER_CHAT";
     
     protected Player player;
     protected String message;

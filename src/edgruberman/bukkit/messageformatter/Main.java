@@ -11,10 +11,12 @@ import edgruberman.bukkit.messagemanager.MessageManager;
 
 public final class Main extends JavaPlugin {
     
-    final static String eventPrefix = "MessageFormatter"; 
+    final static String EVENT_PREFIX = "MessageFormatter"; 
     
     static ConfigurationFile configurationFile;
     static MessageManager messageManager;
+    
+    private static String consoleName = null;
     
     public void onLoad() {
         Main.messageManager = new MessageManager(this);
@@ -25,6 +27,7 @@ public final class Main extends JavaPlugin {
     
     public void onEnable() {
         Main.configurationFile.load();
+        Main.consoleName = Main.configurationFile.getConfig().getString("ConsoleCommandSender.name");
         new PlayerListener(this);
         new CommandManager(this);
         Main.messageManager.log("Plugin Enabled");
@@ -36,7 +39,7 @@ public final class Main extends JavaPlugin {
     
     static void say(final CommandSender sender, final String message) {
         String name = sender.getName();
-        if (sender instanceof ConsoleCommandSender) name = Main.configurationFile.getConfiguration().getString("ConsoleCommandSender.name", name);
+        if (Main.consoleName != null && sender instanceof ConsoleCommandSender) name = Main.consoleName;
         if (sender instanceof Player) name = ((Player) sender).getDisplayName();
         
         Main.messageManager.broadcast(
@@ -47,7 +50,7 @@ public final class Main extends JavaPlugin {
     
     static void me(final CommandSender sender, final String message) {
         String name = sender.getName();
-        if (sender instanceof ConsoleCommandSender) name = Main.configurationFile.getConfiguration().getString("ConsoleCommandSender.name", name);
+        if (Main.consoleName != null && sender instanceof ConsoleCommandSender) name = Main.consoleName;
         if (sender instanceof Player) name = ((Player) sender).getDisplayName();
         
         Main.messageManager.broadcast(
@@ -58,7 +61,7 @@ public final class Main extends JavaPlugin {
     
     static void tell(final CommandSender sender, final Player target, final String message) {
         String name = sender.getName();
-        if (sender instanceof ConsoleCommandSender) name = Main.configurationFile.getConfiguration().getString("ConsoleCommandSender.name", name);
+        if (Main.consoleName != null && sender instanceof ConsoleCommandSender) name = Main.consoleName;
         if (sender instanceof Player) name = ((Player) sender).getDisplayName();
         
         Main.messageManager.send(
@@ -69,14 +72,14 @@ public final class Main extends JavaPlugin {
     }
     
     static MessageLevel getMessageLevel(final String path) {
-        return MessageLevel.parse(Main.configurationFile.getConfiguration().getString(path + ".level"));
+        return MessageLevel.parse(Main.configurationFile.getConfig().getString(path + ".level"));
     }
     
     static String getMessageFormat(final String path) {
-        return Main.configurationFile.getConfiguration().getString(path + ".format");
+        return Main.configurationFile.getConfig().getString(path + ".format");
     }
     
     static Event.Priority getEventPriority(final String path) {
-        return Event.Priority.valueOf(Main.configurationFile.getConfiguration().getString(path + ".priority"));
+        return Event.Priority.valueOf(Main.configurationFile.getConfig().getString(path + ".priority"));
     }
 }
