@@ -17,11 +17,11 @@ final class PlayerListener extends org.bukkit.event.player.PlayerListener {
     PlayerListener(final JavaPlugin plugin) {
         org.bukkit.plugin.PluginManager pluginManager = plugin.getServer().getPluginManager();
         
+        pluginManager.registerEvent(Event.Type.PLAYER_LOGIN, this, Main.getEventPriority("PLAYER_LOGIN"), plugin);
         pluginManager.registerEvent(Event.Type.PLAYER_JOIN, this, Main.getEventPriority("PLAYER_JOIN"), plugin);
         pluginManager.registerEvent(Event.Type.PLAYER_CHAT, this, Main.getEventPriority("PLAYER_CHAT"), plugin);
         pluginManager.registerEvent(Event.Type.PLAYER_QUIT, this, Main.getEventPriority("PLAYER_QUIT"), plugin);
         pluginManager.registerEvent(Event.Type.PLAYER_KICK, this, Main.getEventPriority("PLAYER_KICK"), plugin);
-        pluginManager.registerEvent(Event.Type.PLAYER_LOGIN, this, Main.getEventPriority("PLAYER_LOGIN"), plugin);
     }
     
     @Override

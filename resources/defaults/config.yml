@@ -1,12 +1,12 @@
 say:
     level: INFO
-    format: '<%2$s> %1$s' # 1 = Message, 2 = Player Name
+    format: '<%2$s> %1$s' # 1 = Message, 2 = Sender Name
 me:
     level: INFO
-    format: '* %2$s %1s' # 1 = Message, 2 = Player Name
+    format: '* %2$s %1s' # 1 = Message, 2 = Sender Name
 tell:
     level: INFO
-    format: '<%2$s> %1$s' # 1 = Message, 2 = Player Name
+    format: '&7<%2$s> %1$s' # 1 = Message, 2 = Sender Name
 PLAYER_CHAT:
     priority: Normal
     level: INFO
