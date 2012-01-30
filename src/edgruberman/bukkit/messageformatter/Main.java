@@ -1,85 +1,108 @@
 package edgruberman.bukkit.messageformatter;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import edgruberman.bukkit.messageformatter.commands.Broadcast;
+import edgruberman.bukkit.messageformatter.commands.Me;
+import edgruberman.bukkit.messageformatter.commands.Say;
+import edgruberman.bukkit.messageformatter.commands.Send;
+import edgruberman.bukkit.messageformatter.commands.Tell;
 import edgruberman.bukkit.messagemanager.MessageLevel;
 import edgruberman.bukkit.messagemanager.MessageManager;
 
 public final class Main extends JavaPlugin {
-    
-    final static String EVENT_PREFIX = "MessageFormatter"; 
-    
-    static ConfigurationFile configurationFile;
-    static MessageManager messageManager;
-    
-    private static String consoleName = null;
-    
+
+    public static MessageManager messageManager;
+
+    private static ConfigurationFile configurationFile;
+
+    private static String senderPlayer = null;
+    private static String senderOther = null;
+    private static String senderConsole = null;
+
     public void onLoad() {
         Main.messageManager = new MessageManager(this);
         Main.messageManager.log("Version " + this.getDescription().getVersion());
 
         Main.configurationFile = new ConfigurationFile(this);
     }
-    
+
     public void onEnable() {
-        Main.configurationFile.load();
-        Main.consoleName = Main.configurationFile.getConfig().getString("ConsoleCommandSender.name");
-        new PlayerListener(this);
-        new CommandManager(this);
+        this.loadConfiguration();
+
+        new Messager(this);
+        new Formatter(this);
+        new Say(this);
+        new Me(this);
+        new Tell(this);
+        new Broadcast(this);
+        new Send(this);
+
         Main.messageManager.log("Plugin Enabled");
     }
-    
+
     public void onDisable() {
         Main.messageManager.log("Plugin Disabled");
     }
-    
-    static void say(final CommandSender sender, final String message) {
-        String name = sender.getName();
-        if (Main.consoleName != null && sender instanceof ConsoleCommandSender) name = Main.consoleName;
-        if (sender instanceof Player) name = ((Player) sender).getDisplayName();
-        
-        Main.messageManager.broadcast(
-                String.format(Main.getMessageFormat("say"), message, name)
-                , Main.getMessageLevel("say")
-        );
+
+    public void loadConfiguration() {
+        FileConfiguration config = Main.configurationFile.load();
+
+        Main.senderPlayer = config.getString("senders.player");
+        Main.senderOther = config.getString("senders.other");
+        Main.senderConsole = config.getString("senders.console");
+
+        Formatter.cancelQuitAfterKick = config.getBoolean("PlayerKickEvent.cancelQuit", Formatter.cancelQuitAfterKick);
     }
-    
-    static void me(final CommandSender sender, final String message) {
-        String name = sender.getName();
-        if (Main.consoleName != null && sender instanceof ConsoleCommandSender) name = Main.consoleName;
-        if (sender instanceof Player) name = ((Player) sender).getDisplayName();
-        
-        Main.messageManager.broadcast(
-                String.format(Main.getMessageFormat("me"), message, name)
-                , Main.getMessageLevel("me")
-        );
-    }
-    
-    static void tell(final CommandSender sender, final Player target, final String message) {
-        String name = sender.getName();
-        if (Main.consoleName != null && sender instanceof ConsoleCommandSender) name = Main.consoleName;
-        if (sender instanceof Player) name = ((Player) sender).getDisplayName();
-        
-        Main.messageManager.send(
-                target
-                , String.format(Main.getMessageFormat("tell"), message, name)
-                , Main.getMessageLevel("tell")
-        );
-    }
-    
-    static MessageLevel getMessageLevel(final String path) {
+
+    public static MessageLevel getMessageLevel(final String path) {
         return MessageLevel.parse(Main.configurationFile.getConfig().getString(path + ".level"));
     }
-    
-    static String getMessageFormat(final String path) {
+
+    public static String getMessageFormat(final String path) {
         return Main.configurationFile.getConfig().getString(path + ".format");
     }
-    
-    static Event.Priority getEventPriority(final String path) {
-        return Event.Priority.valueOf(Main.configurationFile.getConfig().getString(path + ".priority"));
+
+    public static EventPriority getEventPriority(final String path) {
+        return EventPriority.valueOf(Main.configurationFile.getConfig().getString(path + ".priority"));
     }
+
+    public static String formatSender(final CommandSender sender) {
+        if (sender instanceof ConsoleCommandSender)
+            if (Main.senderConsole != null)
+                return String.format(Main.senderConsole, sender.getName());
+
+        if (sender instanceof Player)
+            if (Main.senderPlayer != null)
+                return String.format(Main.senderPlayer, ((Player) sender).getDisplayName());
+
+        if (Main.senderOther != null)
+            return String.format(Main.senderOther, sender.getName());
+
+        return sender.getName();
+    }
+
+    /**
+     * Strip any color codes from message if sender does not have permission to
+     * use colors.
+     *
+     * @param sender
+     * @param message
+     * @return
+     */
+    public static String formatColors(final CommandSender sender, final String message) {
+        if (sender.hasPermission("messageformatter.colors")) return message;
+
+        String stripped = ChatColor.stripColor(message);
+        stripped = MessageManager.stripColor(message);
+
+        return stripped;
+    }
+
 }

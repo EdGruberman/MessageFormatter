@@ -1,41 +1,50 @@
 say:
     level: INFO
-    format: '<%2$s> %1$s' # 1 = Message, 2 = Sender Name
+    format: '%2$s: %1$s' # 1 = Message, 2 = Formatted Name
 me:
     level: INFO
-    format: '* %2$s %1s' # 1 = Message, 2 = Sender Name
+    format: '* %2$s %1s' # 1 = Message, 2 = Formatted Name
 tell:
     level: INFO
-    format: '&7<%2$s> %1$s' # 1 = Message, 2 = Sender Name
-PLAYER_CHAT:
+    recipient:
+        format: '%2$s &7tells&_ you: %1$s' # 1 = Message, 2 = Formatted Sender Name
+    sender:
+        format: 'You &7tell&_ %2$s: %1$s' # 1 = Message, 2 = Formatted Recipient Name
+PlayerChatEvent:
     priority: Normal
     level: INFO
-    format: '<%2$s> %1$s' # 1 = Message, 2 = Player Name
-PLAYER_JOIN:
+    format: '%2$s: %1$s' # 1 = Message, 2 = Formatted Name
+PlayerJoinEvent:
     priority: Normal
     level: CONFIG
-    format: '%1$s joined the server.' # 1 = Player Name
-PLAYER_QUIT:
+    format: '%1$s &ejoined&_ the server' # 1 = Formatted Name
+PlayerQuitEvent:
     priority: Normal
     level: CONFIG
-    format: '%1$s left the server.' # 1 = Player Name
-PLAYER_KICK:
+    format: '%1$s &6left&_ the server' # 1 = Formatted Name
+    displayAfterKick: false
+PlayerKickEvent:
     priority: Normal
     level: SEVERE
-    format: '%1$s was kicked from the server.' # 1 = Player Name
-PLAYER_LOGIN:
+    format: '%1$s was kicked (%2$s)' # 1 = Formatted Name, 2 = Formatted Reason
+    reason:
+        format: '%1$s' # 1 = Reason
+    cancelQuit: true
+PlayerLoginEvent:
     priority: Normal
     KICK_BANNED:
         level: SEVERE
-        format: 'You were previously banned'
+        format: '%1$s'
     KICK_FULL:
         level: NOTICE
-        format: 'There are too many players right now'
+        format: '%1$s'
     KICK_WHITELIST:
         level: WARNING
-        format: 'You are not on the whitelist'
+        format: '%1$s'
     KICK_OTHER:
         level: SEVERE
-        format: 'You have been kicked'
-ConsoleCommandSender:
-    name: '<Console>'
+        format: '%1$s'
+senders:
+    player: '%1$s&_' # 1 = Player Display Name
+    other: '(%1$s&_)' # 1 = Sender Name
+    console: '{&5Console&_}' # 1 = Console Name

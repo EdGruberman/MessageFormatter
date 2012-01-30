@@ -6,20 +6,53 @@ author: EdGruberman (ed@rjump.com)
 main: edgruberman.bukkit.messageformatter.Main
 commands:
     say:
-        description: Broadcasts a message to all players.
+        description: Sends a message to all players formatted as a normal chat message.
+        permission: messageformatter.say
         usage: /<command> <Message>
     me:
-        description: Describes the player performing an action.
+        description: Sends a message to all players formatted as the sender performing an action.
+        permission: messageformatter.me
         usage: /<command> <Message>
     tell:
-        description: Sends a private message to a player.
+        description: Sends a message to a single player formatted as a private chat message.
+        permission: messageformatter.tell
         usage: /<command> <Player> <Message>
     broadcast:
-        description: Broadcasts a message to all players.
-        usage: /<command> [(+|-)timestamp ][<Level> ]<Message>
+        description: Sends a message to all players with options to control formatting.
+        permission: messageformatter.broadcast
+        usage: /<command> [[(+|-)timestamp ]<Level> ]<Message>
     send:
-        description: Sends a private message to a player.
-        usage: /<command> <Player> [(+|-)timestamp ][<Level> ]<Message>
+        description: Sends a private message to a player with options to control formatting.
+        permission: messageformatter.send
+        usage: /<command> <Player> [[(+|-)timestamp ]<Level> ]<Message>
     messageformatter:
         description: Manage plugin settings.
+        permission: messageformatter.messageformatter
         usage: /<command> reload - Reload plugin configuration.
+permissions:
+    messageformatter.colors:
+        description: Can use color codes in commands and chat.
+        default: op
+    messageformatter.say:
+        description: Can use say command.
+        default: true
+    messageformatter.me:
+        description: Can use me command.
+        default: true
+    messageformatter.tell:
+        description: Can use tell command.
+        default: true
+    messageformatter.broadcast:
+        description: Can use broadcast command.
+        default: op
+    messageformatter.send:
+        description: Can use send command.
+        default: op
+    messageformatter.messageformatter:
+        description: Can use messageformatter command.
+        default: op
+    messageformatter.messageformatter.reload:
+        description: Can use reload action of messageformatter command.
+        default: op
+        children:
+            messageformatter.messageformatter: true
