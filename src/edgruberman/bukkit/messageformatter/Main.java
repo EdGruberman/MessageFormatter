@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import edgruberman.bukkit.messageformatter.commands.Broadcast;
 import edgruberman.bukkit.messageformatter.commands.Me;
+import edgruberman.bukkit.messageformatter.commands.Reply;
 import edgruberman.bukkit.messageformatter.commands.Say;
 import edgruberman.bukkit.messageformatter.commands.Send;
 import edgruberman.bukkit.messageformatter.commands.Tell;
@@ -41,6 +42,7 @@ public final class Main extends JavaPlugin {
         new Say(this);
         new Me(this);
         new Tell(this);
+        new Reply(this);
         new Broadcast(this);
         new Send(this);
 

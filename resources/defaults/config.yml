@@ -4,7 +4,7 @@ say:
 me:
     level: INFO
     format: '* %2$s %1s' # 1 = Message, 2 = Formatted Name
-tell:
+tell: # Used for reply command also
     level: INFO
     recipient:
         format: '%2$s &7tells&_ you: %1$s' # 1 = Message, 2 = Formatted Sender Name

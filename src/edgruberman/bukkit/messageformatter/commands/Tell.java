@@ -1,7 +1,7 @@
 package edgruberman.bukkit.messageformatter.commands;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import edgruberman.bukkit.messageformatter.Main;
@@ -29,22 +29,26 @@ public final class Tell extends Action {
 
         String message = Parser.join(context.arguments.subList(1, context.arguments.size())).trim();
         message = Main.formatColors(context.sender, message);
+        Tell.send(recipient.getPlayer(), context.sender, message);
+        return true;
+    }
 
+    static void send(final CommandSender recipient, final CommandSender sender, final String message) {
         // Recipient
-        Main.messageManager.send(
-                recipient.getPlayer()
-                , String.format(Main.getMessageFormat("tell.recipient"), message, Main.formatSender(context.sender))
+        Main.messageManager.respond(
+                recipient
+                , String.format(Main.getMessageFormat("tell.recipient"), message, Main.formatSender(sender))
                 , Main.getMessageLevel("tell")
         );
 
         // Sender
-        Main.messageManager.send(
-                (Player) context.sender
-                , String.format(Main.getMessageFormat("tell.sender"), message, Main.formatSender(recipient.getPlayer()))
+        Main.messageManager.respond(
+                sender
+                , String.format(Main.getMessageFormat("tell.sender"), message, Main.formatSender(recipient))
                 , Main.getMessageLevel("tell")
         );
 
-        return true;
+        Reply.lastTellFrom.put(recipient, sender);
     }
 
 }

@@ -17,6 +17,10 @@ commands:
         description: Sends a message to a single player formatted as a private chat message.
         permission: messageformatter.tell
         usage: /<command> <Player> <Message>
+    reply:
+        description: Sends a message to the last player that sent you a message.
+        permission: messageformatter.reply
+        usage: /<command> <Message>
     broadcast:
         description: Sends a message to all players with options to control formatting.
         permission: messageformatter.broadcast
@@ -41,6 +45,9 @@ permissions:
         default: true
     messageformatter.tell:
         description: Can use tell command.
+        default: true
+    messageformatter.reply:
+        description: Can use reply command.
         default: true
     messageformatter.broadcast:
         description: Can use broadcast command.
