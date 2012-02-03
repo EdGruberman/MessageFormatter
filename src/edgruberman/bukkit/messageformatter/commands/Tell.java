@@ -37,14 +37,14 @@ public final class Tell extends Action {
         // Recipient
         Main.messageManager.respond(
                 recipient
-                , String.format(Main.getMessageFormat("tell.recipient"), message, Main.formatSender(sender))
+                , String.format(Main.getMessageFormat("tell.recipient"), message, Main.formatSender(sender), Main.formatSender(recipient))
                 , Main.getMessageLevel("tell")
         );
 
         // Sender
         Main.messageManager.respond(
                 sender
-                , String.format(Main.getMessageFormat("tell.sender"), message, Main.formatSender(recipient))
+                , String.format(Main.getMessageFormat("tell.sender"), message, Main.formatSender(sender), Main.formatSender(recipient))
                 , Main.getMessageLevel("tell")
         );
 

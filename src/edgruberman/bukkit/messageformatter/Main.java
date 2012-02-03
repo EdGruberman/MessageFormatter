@@ -9,6 +9,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import edgruberman.bukkit.messageformatter.commands.Broadcast;
+import edgruberman.bukkit.messageformatter.commands.Local;
 import edgruberman.bukkit.messageformatter.commands.Me;
 import edgruberman.bukkit.messageformatter.commands.Reply;
 import edgruberman.bukkit.messageformatter.commands.Say;
@@ -39,10 +40,12 @@ public final class Main extends JavaPlugin {
 
         new Messager(this);
         new Formatter(this);
+
         new Say(this);
         new Me(this);
         new Tell(this);
         new Reply(this);
+        new Local(this);
         new Broadcast(this);
         new Send(this);
 
@@ -61,6 +64,8 @@ public final class Main extends JavaPlugin {
         Main.senderConsole = config.getString("senders.console");
 
         Formatter.cancelQuitAfterKick = config.getBoolean("PlayerKickEvent.cancelQuit", Formatter.cancelQuitAfterKick);
+
+        Local.distance = config.getInt("local.distance", Local.distance);
     }
 
     public static MessageLevel getMessageLevel(final String path) {

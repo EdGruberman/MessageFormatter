@@ -7,9 +7,13 @@ me:
 tell: # Used for reply command also
     level: INFO
     recipient:
-        format: '%2$s &7tells&_ you: %1$s' # 1 = Message, 2 = Formatted Sender Name
+        format: '%2$s &7tells&_ you: %1$s' # 1 = Message, 2 = Formatted Sender Name, 3 = Formatted Recipient Name
     sender:
-        format: 'You &7tell&_ %2$s: %1$s' # 1 = Message, 2 = Formatted Recipient Name
+        format: 'You &7tell&_ %3$s: %1$s' # 1 = Message, 2 = Formatted Sender Name, 3 = Formatted Recipient Name
+local:
+    level: INFO
+    format: '[&6Local&_] %2$s: %1$s' # 1 = Message, 2 = Formatted Name
+    distance: 100
 PlayerChatEvent:
     priority: Normal
     level: INFO

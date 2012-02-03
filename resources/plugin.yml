@@ -21,6 +21,10 @@ commands:
         description: Sends a message to the last player that sent you a message.
         permission: messageformatter.reply
         usage: /<command> <Message>
+    local:
+        description: Sends a message only to players close to sender.
+        permission: messageformatter.local
+        usage: /<command> <Message>
     broadcast:
         description: Sends a message to all players with options to control formatting.
         permission: messageformatter.broadcast
@@ -48,6 +52,9 @@ permissions:
         default: true
     messageformatter.reply:
         description: Can use reply command.
+        default: true
+    messageformatter.local:
+        description: Can use local command.
         default: true
     messageformatter.broadcast:
         description: Can use broadcast command.
