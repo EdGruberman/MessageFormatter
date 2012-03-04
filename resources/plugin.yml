@@ -1,8 +1,8 @@
-name: MessageFormatter
+name: @NAME@
 description: Standardize server message colors and format.
-version: %VERSION%
 depend: [MessageManager]
-author: EdGruberman (ed@rjump.com)
+version: @VERSION@
+author: @AUTHOR@
 main: edgruberman.bukkit.messageformatter.Main
 commands:
     say:
