@@ -25,9 +25,9 @@ public final class Reply extends Action {
     public boolean perform(final Context context) {
         if (context.arguments.size() < 1) return false;
 
-        CommandSender recipient = Reply.lastTellFrom.get(context.sender);
+        final CommandSender recipient = Reply.lastTellFrom.get(context.sender);
         if (recipient == null || (recipient instanceof Player && !((Player) recipient).isOnline())) {
-            Main.messageManager.respond(context.sender, "There is no online player to respond to.", MessageLevel.WARNING, false);
+            Main.messageManager.respond(context.sender, "Unable to send reply; Last sender not found", MessageLevel.WARNING, false);
             return true;
         }
 
