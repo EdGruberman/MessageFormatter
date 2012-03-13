@@ -1,72 +1,72 @@
 name: @NAME@
-description: Standardize server message colors and format.
+description: Chat message formatting
 depend: [MessageManager]
 version: @VERSION@
 author: @AUTHOR@
 main: edgruberman.bukkit.messageformatter.Main
 commands:
     say:
-        description: Sends a message to all players formatted as a normal chat message.
+        description: Broadcast a message to all players
         permission: messageformatter.say
         usage: /<command> <Message>
     me:
-        description: Sends a message to all players formatted as the sender performing an action.
+        description: Broadcast an action to all players
         permission: messageformatter.me
         usage: /<command> <Message>
     tell:
-        description: Sends a message to a single player formatted as a private chat message.
+        description: Send a private message to a player
         permission: messageformatter.tell
         usage: /<command> <Player> <Message>
     reply:
-        description: Sends a message to the last player that sent you a message.
+        description: Send a private message to the last player that sent you a private message
         permission: messageformatter.reply
         usage: /<command> <Message>
     local:
-        description: Sends a message only to players close to sender.
+        description: Broadcast a message only to players close by
         permission: messageformatter.local
         usage: /<command> <Message>
     broadcast:
-        description: Sends a message to all players with options to control formatting.
+        description: Broadcast a message to all players with formatting options
         permission: messageformatter.broadcast
         usage: /<command> [[(+|-)timestamp ]<Level> ]<Message>
     send:
-        description: Sends a private message to a player with options to control formatting.
+        description: Send a private message to a player with formatting options
         permission: messageformatter.send
         usage: /<command> <Player> [[(+|-)timestamp ]<Level> ]<Message>
     messageformatter:
-        description: Manage plugin settings.
+        description: Manage plugin settings
         permission: messageformatter.messageformatter
-        usage: /<command> reload - Reload plugin configuration.
+        usage: /<command> reload - Reload plugin configuration
 permissions:
     messageformatter.colors:
-        description: Can use color codes in commands and chat.
+        description: Can use color codes in commands and chat
         default: op
     messageformatter.say:
-        description: Can use say command.
+        description: Can use say command
         default: true
     messageformatter.me:
-        description: Can use me command.
+        description: Can use me command
         default: true
     messageformatter.tell:
-        description: Can use tell command.
+        description: Can use tell command
         default: true
     messageformatter.reply:
-        description: Can use reply command.
+        description: Can use reply command
         default: true
     messageformatter.local:
-        description: Can use local command.
+        description: Can use local command
         default: true
     messageformatter.broadcast:
-        description: Can use broadcast command.
+        description: Can use broadcast command
         default: op
     messageformatter.send:
-        description: Can use send command.
+        description: Can use send command
         default: op
     messageformatter.messageformatter:
-        description: Can use messageformatter command.
+        description: Can use messageformatter command
         default: op
     messageformatter.messageformatter.reload:
-        description: Can use reload action of messageformatter command.
+        description: Can use reload action of messageformatter command
         default: op
         children:
             messageformatter.messageformatter: true

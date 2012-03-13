@@ -21,7 +21,7 @@ public final class Local extends Action {
     @Override
     public boolean perform(final Context context) {
         if (!(context.sender instanceof Player)) {
-            Main.messageManager.respond(context.sender, "Only players can use the " + context.label + " command.", MessageLevel.RIGHTS);
+            Main.messageManager.respond(context.sender, "Only in-game players can use the " + context.label + " command", MessageLevel.RIGHTS);
             return true;
         }
 
@@ -30,12 +30,14 @@ public final class Local extends Action {
         if (message.length() < 1) return false;
 
         message = String.format(Main.getMessageFormat("local"), message.trim(), Main.formatSender(context.sender));
-        MessageLevel level = Main.getMessageLevel("local");
+        final MessageLevel level = Main.getMessageLevel("local");
 
-        Player sender = (Player) context.sender;
-        for (Entity e : sender.getNearbyEntities(Local.distance, Local.distance, Local.distance))
+        final Player sender = (Player) context.sender;
+        for (final Entity e : sender.getNearbyEntities(Local.distance, Local.distance, Local.distance))
             if (e instanceof Player)
                 Main.messageManager.send((Player) e, message, level);
+
+        Main.messageManager.respond(context.sender, message, level);
 
         return true;
     }
