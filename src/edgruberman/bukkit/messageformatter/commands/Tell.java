@@ -21,7 +21,7 @@ public final class Tell extends Action {
         // Must supply at least two arguments: /<command> <Player> <Message>
         if (context.arguments.size() < 2) return false;
 
-        OfflinePlayer recipient = Parser.parsePlayer(context, 0);
+        final OfflinePlayer recipient = Parser.parsePlayer(context, 0);
         if (recipient == null || recipient.getPlayer() == null || !recipient.getPlayer().isOnline()) {
             Main.messageManager.respond(context.sender, "There is no online player matching the name of: " + context.arguments.get(0), MessageLevel.WARNING, false);
             return true;
@@ -34,17 +34,17 @@ public final class Tell extends Action {
     }
 
     static void send(final CommandSender recipient, final CommandSender sender, final String message) {
-        // Recipient
-        Main.messageManager.respond(
-                recipient
-                , String.format(Main.getMessageFormat("tell.recipient"), message, Main.formatSender(sender), Main.formatSender(recipient))
-                , Main.getMessageLevel("tell")
-        );
-
         // Sender
         Main.messageManager.respond(
                 sender
                 , String.format(Main.getMessageFormat("tell.sender"), message, Main.formatSender(sender), Main.formatSender(recipient))
+                , Main.getMessageLevel("tell")
+        );
+
+        // Recipient
+        Main.messageManager.respond(
+                recipient
+                , String.format(Main.getMessageFormat("tell.recipient"), message, Main.formatSender(sender), Main.formatSender(recipient))
                 , Main.getMessageLevel("tell")
         );
 
