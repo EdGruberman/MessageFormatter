@@ -52,3 +52,4 @@ senders:
     player: '%1$s&_' # 1 = Player Display Name
     other: '(%1$s&_)' # 1 = Sender Name
     console: '{&5Console&_}' # 1 = Console Name
+logLevel: CONFIG
