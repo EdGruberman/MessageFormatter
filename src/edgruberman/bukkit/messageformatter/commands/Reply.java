@@ -15,7 +15,10 @@ import edgruberman.bukkit.messagemanager.MessageLevel;
 
 public final class Reply extends Action {
 
-    static Map<CommandSender, CommandSender> lastTellFrom = new HashMap<CommandSender, CommandSender>();
+    /**
+     * Index of last private messages sent From, To.
+     */
+    static Map<CommandSender, CommandSender> last = new HashMap<CommandSender, CommandSender>();
 
     public Reply(final JavaPlugin plugin) {
         super(plugin, "reply");
@@ -25,7 +28,7 @@ public final class Reply extends Action {
     public boolean perform(final Context context) {
         if (context.arguments.size() < 1) return false;
 
-        final CommandSender recipient = Reply.lastTellFrom.get(context.sender);
+        final CommandSender recipient = Reply.last.get(context.sender);
         if (recipient == null || (recipient instanceof Player && !((Player) recipient).isOnline())) {
             Main.messageManager.respond(context.sender, "Unable to send reply; Last sender not found", MessageLevel.WARNING, false);
             return true;

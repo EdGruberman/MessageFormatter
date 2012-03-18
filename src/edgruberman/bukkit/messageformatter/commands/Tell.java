@@ -48,7 +48,8 @@ public final class Tell extends Action {
                 , Main.getMessageLevel("tell")
         );
 
-        Reply.lastTellFrom.put(recipient, sender);
+        Reply.last.put(sender, recipient);
+        Reply.last.put(recipient, sender);
     }
 
 }
