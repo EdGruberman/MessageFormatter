@@ -30,7 +30,7 @@ PlayerQuitEvent:
 PlayerKickEvent:
     priority: Normal
     level: SEVERE
-    format: '%1$s was kicked (%2$s)' # 1 = Formatted Name, 2 = Formatted Reason
+    format: '%1$s was kicked (%2$s&_)' # 1 = Formatted Name, 2 = Formatted Reason
     reason:
         format: '%1$s' # 1 = Reason
     cancelQuit: true
