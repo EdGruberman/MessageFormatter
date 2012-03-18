@@ -3,6 +3,7 @@ package edgruberman.bukkit.messageformatter.commands.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -24,39 +25,58 @@ public class Handler implements CommandExecutor  {
 
     /**
      * Create a command executor with a default plugin.command permission.
-     * 
+     *
      * @param plugin command owner
      * @param label command name
      */
-    protected Handler(final JavaPlugin plugin, final String label) {
+    public Handler(final JavaPlugin plugin, final String label) {
         this.setExecutorOf(plugin, label);
         this.permission = this.command.getPlugin().getDescription().getName().toLowerCase() + "." + this.command.getLabel();
     }
 
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
-        Main.messageManager.log(sender.getName() + " issued command: " + this.command.getLabel() + " " + Arrays.toString(args), MessageLevel.FINE);
+        this.command.getPlugin().getLogger().log(Level.FINER, sender.getName() + " issued command: " + label + " " + Arrays.toString(args));
 
-        Context context = new Context(this, sender, label, args);
-        if (!context.isAllowed()) return true;
+        final Context context = new Context(this, sender, label, args);
+        if (!context.action.isAllowed(context)) return true;
 
-        context.performAction();
+        if (context.action.perform(context)) return true;
+
+        // Send usage information on error
+        for (final String line : context.action.handler.command.getUsage().replace("<command>", context.label).split("\n"))
+            Main.messageManager.respond(context.sender, line, MessageLevel.NOTICE, false);
+
         return true; // Always tell Bukkit this is successful as usage message errors are handled internally
+    }
+
+    public void setDefaultAction(final Action action) {
+        this.actions.remove(action);
+        this.actions.add(0, action);
+    }
+
+    public Action getDefaultAction() {
+        return this.actions.get(0);
     }
 
     /**
      * Registers executor for a command.
-     * 
+     *
      * @param label command label to register
      */
     private void setExecutorOf(final JavaPlugin plugin, final String label) {
         this.command = plugin.getCommand(label);
         if (this.command == null) {
-            Main.messageManager.log("Unable to register " + label + " command.", MessageLevel.WARNING);
+            this.command.getPlugin().getLogger().log(Level.WARNING, "Unable to register command: " + label);
             return;
         }
 
         this.command.setExecutor(this);
+    }
+
+    @Override
+    public String toString() {
+        return "Handler [command=" + this.command + "]";
     }
 
 }

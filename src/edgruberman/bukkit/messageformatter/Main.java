@@ -1,5 +1,7 @@
 package edgruberman.bukkit.messageformatter;
 
+import java.util.logging.Level;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -23,20 +25,31 @@ public final class Main extends JavaPlugin {
     public static MessageManager messageManager;
 
     private static ConfigurationFile configurationFile;
+    private boolean firstEnable = true;
 
     private static String senderPlayer = null;
     private static String senderOther = null;
     private static String senderConsole = null;
 
+    @Override
     public void onLoad() {
-        Main.messageManager = new MessageManager(this);
-        Main.messageManager.log("Version " + this.getDescription().getVersion());
-
         Main.configurationFile = new ConfigurationFile(this);
+        Main.configurationFile.load();
+        this.setLoggingLevel();
+        Main.messageManager = new MessageManager(this);
     }
 
+    private void setLoggingLevel() {
+        final String name = Main.configurationFile.getConfig().getString("logLevel", "INFO");
+        Level level = MessageLevel.parse(name);
+        if (level == null) level = Level.INFO;
+        this.getLogger().setLevel(level);
+    }
+
+    @Override
     public void onEnable() {
         this.loadConfiguration();
+        this.firstEnable = false;
 
         new Messager(this);
         new Formatter(this);
@@ -48,16 +61,11 @@ public final class Main extends JavaPlugin {
         new Local(this);
         new Broadcast(this);
         new Send(this);
-
-        Main.messageManager.log("Plugin Enabled");
-    }
-
-    public void onDisable() {
-        Main.messageManager.log("Plugin Disabled");
     }
 
     public void loadConfiguration() {
-        FileConfiguration config = Main.configurationFile.load();
+        if (!this.firstEnable) Main.configurationFile.load();
+        final FileConfiguration config = Main.configurationFile.getConfig();
 
         Main.senderPlayer = config.getString("senders.player");
         Main.senderOther = config.getString("senders.other");
