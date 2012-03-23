@@ -14,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import edgruberman.bukkit.messageformatter.commands.Broadcast;
 import edgruberman.bukkit.messageformatter.commands.Local;
 import edgruberman.bukkit.messageformatter.commands.Me;
+import edgruberman.bukkit.messageformatter.commands.MessageFormatter;
 import edgruberman.bukkit.messageformatter.commands.Reply;
 import edgruberman.bukkit.messageformatter.commands.Say;
 import edgruberman.bukkit.messageformatter.commands.Send;
@@ -51,6 +52,8 @@ public final class Main extends JavaPlugin {
         new Local(this);
         new Broadcast(this);
         new Send(this);
+
+        new MessageFormatter(this);
     }
 
     public void configure() {
