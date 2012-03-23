@@ -14,8 +14,9 @@ final class MessageFormatterReload extends Action {
 
     @Override
     public boolean perform(final Context context) {
-        ((Main) context.handler.command.getPlugin()).loadConfiguration();
-        Main.messageManager.respond(context.sender, "[" + context.handler.command.getPlugin().getDescription().getName()  + "] Configuration reloaded", MessageLevel.STATUS);
+        context.handler.command.getPlugin().onDisable();
+        context.handler.command.getPlugin().onEnable();
+        Main.messageManager.send(context.sender, "Configuration reloaded", MessageLevel.STATUS, false);
         return true;
     }
 

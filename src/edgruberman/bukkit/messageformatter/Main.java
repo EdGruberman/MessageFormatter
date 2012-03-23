@@ -1,5 +1,6 @@
 package edgruberman.bukkit.messageformatter;
 
+import java.util.logging.Handler;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
@@ -25,31 +26,20 @@ public final class Main extends JavaPlugin {
     public static MessageManager messageManager;
 
     private static ConfigurationFile configurationFile;
-    private boolean firstEnable = true;
 
     private static String senderPlayer = null;
     private static String senderOther = null;
     private static String senderConsole = null;
 
     @Override
-    public void onLoad() {
+    public void onEnable() {
         Main.configurationFile = new ConfigurationFile(this);
         Main.configurationFile.load();
         this.setLoggingLevel();
+
         Main.messageManager = new MessageManager(this);
-    }
 
-    private void setLoggingLevel() {
-        final String name = Main.configurationFile.getConfig().getString("logLevel", "INFO");
-        Level level = MessageLevel.parse(name);
-        if (level == null) level = Level.INFO;
-        this.getLogger().setLevel(level);
-    }
-
-    @Override
-    public void onEnable() {
-        this.loadConfiguration();
-        this.firstEnable = false;
+        this.configure();
 
         new Messager(this);
         new Formatter(this);
@@ -63,8 +53,7 @@ public final class Main extends JavaPlugin {
         new Send(this);
     }
 
-    public void loadConfiguration() {
-        if (!this.firstEnable) Main.configurationFile.load();
+    public void configure() {
         final FileConfiguration config = Main.configurationFile.getConfig();
 
         Main.senderPlayer = config.getString("senders.player");
@@ -74,6 +63,19 @@ public final class Main extends JavaPlugin {
         Formatter.cancelQuitAfterKick = config.getBoolean("PlayerKickEvent.cancelQuit", Formatter.cancelQuitAfterKick);
 
         Local.distance = config.getInt("local.distance", Local.distance);
+    }
+
+    private void setLoggingLevel() {
+        final String name = Main.configurationFile.getConfig().getString("logLevel", "INFO");
+        Level level = MessageLevel.parse(name);
+        if (level == null) level = Level.INFO;
+
+        // Only set the parent handler lower if necessary, otherwise leave it alone for other configurations that have set it.
+        for (final Handler h : this.getLogger().getParent().getHandlers())
+            if (h.getLevel().intValue() > level.intValue()) h.setLevel(level);
+
+        this.getLogger().setLevel(level);
+        this.getLogger().log(Level.CONFIG, "Logging level set to: " + this.getLogger().getLevel());
     }
 
     public static MessageLevel getMessageLevel(final String path) {

@@ -17,14 +17,17 @@ commands:
         description: Send a private message to a player
         permission: messageformatter.tell
         usage: /<command> <Player> <Message>
+        aliases: t
     reply:
         description: Send a private message to the last player that sent you a private message
         permission: messageformatter.reply
         usage: /<command> <Message>
+        aliases: r
     local:
         description: Broadcast a message only to players close by
         permission: messageformatter.local
         usage: /<command> <Message>
+        aliases: l
     broadcast:
         description: Broadcast a message to all players with formatting options
         permission: messageformatter.broadcast

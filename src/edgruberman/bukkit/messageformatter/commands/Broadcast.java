@@ -19,8 +19,8 @@ public final class Broadcast extends Action {
         if (context.arguments.size() < 1) return false;
 
         int messageStart = 0;
-        boolean isTimestamped = Main.messageManager.useTimestampDefault;
-        MessageLevel level = edgruberman.bukkit.messagemanager.Settings.DEFAULT_MESSAGE_LEVEL;
+        boolean isTimestamped = Main.messageManager.applyTimestampDefault;
+        MessageLevel level = Main.messageManager.levelDefault;
         if (context.arguments.size() >= 2) {
             if (context.arguments.get(messageStart).toLowerCase().endsWith("timestamp")) {
                 isTimestamped = !context.arguments.get(messageStart).startsWith("-");
@@ -30,7 +30,7 @@ public final class Broadcast extends Action {
             if (context.arguments.get(messageStart).matches("^%[^%]+%$")) {
                 level = MessageLevel.parse(context.arguments.get(messageStart).substring(1, context.arguments.get(messageStart).length() - 1));
                 if (level == null) {
-                    Main.messageManager.respond(context.sender, "Unable to determine message level: " + context.arguments.get(messageStart), MessageLevel.WARNING, false);
+                    Main.messageManager.send(context.sender, "Unable to determine message level: " + context.arguments.get(messageStart), MessageLevel.WARNING, false);
                     return true;
                 }
 

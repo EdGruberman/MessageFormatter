@@ -23,7 +23,7 @@ public final class Tell extends Action {
 
         final OfflinePlayer recipient = Parser.parsePlayer(context, 0);
         if (recipient == null || recipient.getPlayer() == null || !recipient.getPlayer().isOnline()) {
-            Main.messageManager.respond(context.sender, "There is no online player matching the name of: " + context.arguments.get(0), MessageLevel.WARNING, false);
+            Main.messageManager.send(context.sender, "There is no online player matching the name of: " + context.arguments.get(0), MessageLevel.WARNING, false);
             return true;
         }
 
@@ -35,14 +35,14 @@ public final class Tell extends Action {
 
     static void send(final CommandSender recipient, final CommandSender sender, final String message) {
         // Sender
-        Main.messageManager.respond(
+        Main.messageManager.send(
                 sender
                 , String.format(Main.getMessageFormat("tell.sender"), message, Main.formatSender(sender), Main.formatSender(recipient))
                 , Main.getMessageLevel("tell")
         );
 
         // Recipient
-        Main.messageManager.respond(
+        Main.messageManager.send(
                 recipient
                 , String.format(Main.getMessageFormat("tell.recipient"), message, Main.formatSender(sender), Main.formatSender(recipient))
                 , Main.getMessageLevel("tell")

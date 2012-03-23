@@ -21,7 +21,7 @@ public final class Local extends Action {
     @Override
     public boolean perform(final Context context) {
         if (!(context.sender instanceof Player)) {
-            Main.messageManager.respond(context.sender, "Only in-game players can use the " + context.label + " command", MessageLevel.RIGHTS);
+            Main.messageManager.send(context.sender, "Only in-game players can use the " + context.label + " command", MessageLevel.RIGHTS, false);
             return true;
         }
 
@@ -37,7 +37,7 @@ public final class Local extends Action {
             if (e instanceof Player)
                 Main.messageManager.send((Player) e, message, level);
 
-        Main.messageManager.respond(context.sender, message, level);
+        Main.messageManager.send(context.sender, message, level);
 
         return true;
     }

@@ -23,13 +23,15 @@ final class Formatter implements Listener {
     static boolean cancelQuitAfterKick = false;
     static boolean cancelNextQuit = false;
 
+    private final Plugin plugin;
+
     Formatter(final Plugin plugin) {
         // TODO Adjust event priorities according to configuration
         // for (Method method : this.getClass().getDeclaredMethods()) {
         //    if (method.getParameterTypes().length != 1 || !(method.getParameterTypes()[0].isInstance(Event.class))) continue;
         //    method.getAnnotation(EventHandler.class).
         //}
-
+        this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -37,18 +39,18 @@ final class Formatter implements Listener {
     public void onPlayerLogin(final PlayerLoginEvent event) {
         if (event.getResult().equals(Result.ALLOWED)) return;
 
-        MessageLevel level = Main.getMessageLevel(event.getClass().getSimpleName() + "." + event.getResult().name());
+        final MessageLevel level = Main.getMessageLevel(event.getClass().getSimpleName() + "." + event.getResult().name());
         String message = Main.getMessageFormat(event.getClass().getSimpleName() + "." + event.getResult().name());
-        ChatColor color = Main.messageManager.getColor(level, Channel.Type.PLAYER);
+        final ChatColor color = MessageManager.getDispatcher().getChannelConfiguration(Channel.Type.PLAYER, this.plugin).getColor(level);
 
         message = String.format(message, event.getKickMessage());
-        message = color.toString() + MessageManager.colorize(message, color);
+        message = color.toString() + MessageManager.colorize(color, message);
         event.setKickMessage(message);
     }
 
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent event) {
-        String message = String.format(Main.getMessageFormat(event.getClass().getSimpleName()), Main.formatSender(event.getPlayer()));
+        final String message = String.format(Main.getMessageFormat(event.getClass().getSimpleName()), Main.formatSender(event.getPlayer()));
         event.setJoinMessage(message);
     }
 
@@ -67,14 +69,14 @@ final class Formatter implements Listener {
 
         if (Formatter.cancelQuitAfterKick) Formatter.cancelNextQuit = true;
 
-        MessageLevel level = Main.getMessageLevel(event.getClass().getSimpleName());
+        final MessageLevel level = Main.getMessageLevel(event.getClass().getSimpleName());
 
-        ChatColor base = Main.messageManager.getColor(level, Channel.Type.PLAYER);
+        final ChatColor base = MessageManager.getDispatcher().getChannelConfiguration(Channel.Type.PLAYER, this.plugin).getColor(level);
         String reason = String.format(Main.getMessageFormat(event.getClass().getSimpleName() + ".reason"), event.getReason());
-        reason = base + MessageManager.colorize(reason, base);
+        reason = base + MessageManager.colorize(base, reason);
         event.setReason(reason);
 
-        String message = String.format(Main.getMessageFormat(event.getClass().getSimpleName()), Main.formatSender(event.getPlayer()), reason);
+        final String message = String.format(Main.getMessageFormat(event.getClass().getSimpleName()), Main.formatSender(event.getPlayer()), reason);
         event.setLeaveMessage(message);
     }
 
@@ -86,7 +88,7 @@ final class Formatter implements Listener {
             return;
         }
 
-        String message = String.format(Main.getMessageFormat(event.getClass().getSimpleName()), Main.formatSender(event.getPlayer()));
+        final String message = String.format(Main.getMessageFormat(event.getClass().getSimpleName()), Main.formatSender(event.getPlayer()));
         event.setQuitMessage(message);
     }
 

@@ -19,15 +19,15 @@ public final class Send extends Action {
     public boolean perform(final Context context) {
         if (context.arguments.size() < 2) return false;
 
-        OfflinePlayer recipient = Parser.parsePlayer(context, 0);
+        final OfflinePlayer recipient = Parser.parsePlayer(context, 0);
         if (recipient == null || recipient.getPlayer() == null || !recipient.getPlayer().isOnline()) {
-            Main.messageManager.respond(context.sender, "There is no online player matching the name of: " + context.arguments.get(0), MessageLevel.WARNING, false);
+            Main.messageManager.send(context.sender, "There is no online player matching the name of: " + context.arguments.get(0), MessageLevel.WARNING, false);
             return true;
         }
 
         int messageStart = 1;
-        boolean isTimestamped = Main.messageManager.useTimestampDefault;
-        MessageLevel level = edgruberman.bukkit.messagemanager.Settings.DEFAULT_MESSAGE_LEVEL;;
+        boolean isTimestamped = Main.messageManager.applyTimestampDefault;
+        MessageLevel level = Main.messageManager.levelDefault;
         if (context.arguments.size() >= 3) {
             if (context.arguments.get(messageStart).toLowerCase().endsWith("timestamp")) {
                 isTimestamped = !context.arguments.get(messageStart).startsWith("-");
@@ -37,7 +37,7 @@ public final class Send extends Action {
             if (context.arguments.get(messageStart).matches("^%[^%]+%$")) {
                 level = MessageLevel.parse(context.arguments.get(messageStart).substring(1, context.arguments.get(messageStart).length() - 1));
                 if (level == null) {
-                    Main.messageManager.respond(context.sender, "Unable to determine message level: " + context.arguments.get(messageStart), MessageLevel.WARNING, false);
+                    Main.messageManager.send(context.sender, "Unable to determine message level: " + context.arguments.get(messageStart), MessageLevel.WARNING, false);
                     return true;
                 }
                 messageStart++;
