@@ -19,6 +19,7 @@ import edgruberman.bukkit.messageformatter.commands.Reply;
 import edgruberman.bukkit.messageformatter.commands.Say;
 import edgruberman.bukkit.messageformatter.commands.Send;
 import edgruberman.bukkit.messageformatter.commands.Tell;
+import edgruberman.bukkit.messagemanager.MessageColor;
 import edgruberman.bukkit.messagemanager.MessageLevel;
 import edgruberman.bukkit.messagemanager.MessageManager;
 
@@ -123,7 +124,7 @@ public final class Main extends JavaPlugin {
         if (sender.hasPermission("messageformatter.colors")) return message;
 
         String stripped = ChatColor.stripColor(message);
-        stripped = MessageManager.stripColor(message);
+        stripped = MessageColor.stripColorCodes(message);
 
         return stripped;
     }
