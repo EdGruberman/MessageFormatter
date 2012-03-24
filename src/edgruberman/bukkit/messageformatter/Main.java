@@ -24,6 +24,8 @@ import edgruberman.bukkit.messagemanager.MessageManager;
 
 public final class Main extends JavaPlugin {
 
+    private static final String MINIMUM_VERSION_CONFIG = "2.2.0b3";
+
     public static MessageManager messageManager;
 
     private static ConfigurationFile configurationFile;
@@ -35,6 +37,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         Main.configurationFile = new ConfigurationFile(this);
+        Main.configurationFile.setMinVersion(Main.MINIMUM_VERSION_CONFIG);
         Main.configurationFile.load();
         this.setLoggingLevel();
 
