@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.messagemanager.MessageColor;
+import edgruberman.bukkit.messagemanager.MessageDisplay;
 import edgruberman.bukkit.messagemanager.MessageLevel;
 import edgruberman.bukkit.messagemanager.MessageManager;
 import edgruberman.bukkit.messagemanager.channels.Channel;
@@ -45,7 +45,7 @@ final class Formatter implements Listener {
         final ChatColor color = MessageManager.getDispatcher().getChannelConfiguration(Channel.Type.PLAYER, this.plugin).getColor(level);
 
         message = String.format(message, event.getKickMessage());
-        message = MessageColor.colorize(color, message);
+        message = MessageDisplay.translate(color, message);
         event.setKickMessage(message);
     }
 
@@ -74,7 +74,7 @@ final class Formatter implements Listener {
 
         final ChatColor base = MessageManager.getDispatcher().getChannelConfiguration(Channel.Type.PLAYER, this.plugin).getColor(level);
         String reason = String.format(Main.getMessageFormat(event.getClass().getSimpleName() + ".reason"), event.getReason());
-        reason = MessageColor.colorize(base, reason);
+        reason = MessageDisplay.translate(base, reason);
         event.setReason(reason);
 
         final String message = String.format(Main.getMessageFormat(event.getClass().getSimpleName()), Main.formatSender(event.getPlayer()), reason);
