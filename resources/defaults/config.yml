@@ -1,56 +1,56 @@
 say:
     level: INFO
-    format: '%2$s&_: %1$s' # 1 = Message, 2 = Formatted Name
+    format: '%2$s: %1$s' # 1 = Message, 2 = Formatted Name
 me:
     level: INFO
-    format: '* %2$s&_ %1s' # 1 = Message, 2 = Formatted Name
+    format: '* %2$s %1s' # 1 = Message, 2 = Formatted Name
 tell: # Used for reply command also
     level: INFO
     recipient:
-        format: '%2$s&_ &7&Otells&_&_ you: %1$s' # 1 = Message, 2 = Formatted Sender Name, 3 = Formatted Recipient Name
+        format: '%2$s &7&Otells&* you: %1$s' # 1 = Message, 2 = Formatted Sender Name, 3 = Formatted Recipient Name
     sender:
-        format: ' You &7&Otell&_&_ %3$s&_: %1$s' # 1 = Message, 2 = Formatted Sender Name, 3 = Formatted Recipient Name
+        format: ' You &7&Otell&* %3$s: %1$s' # 1 = Message, 2 = Formatted Sender Name, 3 = Formatted Recipient Name
 local:
     level: INFO
-    format: '#&6Local&_# %2$s&_: %1$s' # 1 = Message, 2 = Formatted Name
+    format: '#&6Local&_# %2$s: %1$s' # 1 = Message, 2 = Formatted Name
     distance: 100
 PlayerChatEvent:
     priority: Normal
     level: INFO
-    format: '%2$s&_: %1$s' # 1 = Message, 2 = Formatted Name
+    format: '%2$s: %1$s' # 1 = Message, 2 = Formatted Name
 PlayerJoinEvent:
     priority: Normal
     level: CONFIG
-    format: '%1$s&_ &ejoined&_ the server' # 1 = Formatted Name
+    format: '%1$s &ejoined&_ the server' # 1 = Formatted Name
 PlayerQuitEvent:
     priority: Normal
     level: CONFIG
-    format: '%1$s&_ &6left&_ the server' # 1 = Formatted Name
+    format: '%1$s &6left&_ the server' # 1 = Formatted Name
     displayAfterKick: false
 PlayerKickEvent:
     priority: Normal
     level: SEVERE
-    format: '%1$s&_ was kicked (%2$s&_)' # 1 = Formatted Name, 2 = Formatted Reason
+    format: '%1$s was kicked (%2$s)' # 1 = Formatted Name, 2 = Formatted Reason
     reason:
-        format: '&O%1$s&_' # 1 = Reason
+        format: '&O%1$s&*' # 1 = Reason
     cancelQuit: true
 PlayerLoginEvent:
     priority: Normal
     KICK_BANNED:
         level: SEVERE
-        format: '&O%1$s&_'
+        format: '&O%1$s&*'
     KICK_FULL:
         level: NOTICE
-        format: '&O%1$s&_'
+        format: '&O%1$s&*'
     KICK_WHITELIST:
         level: WARNING
-        format: '&O%1$s&_'
+        format: '&O%1$s&*'
     KICK_OTHER:
         level: SEVERE
-        format: '&O%1$s&_'
+        format: '&O%1$s&*'
 senders:
-    player: '%1$s&_' # 1 = Player Display Name
-    other: '(%1$s&_)' # 1 = Sender Name
-    console: '&5&OConsole&_&_' # 1 = Console Name
+    player: '%1$s&*' # 1 = Player Display Name
+    other: '(%1$s&*)' # 1 = Sender Name
+    console: '&5&OConsole&*' # 1 = Console Name
 logLevel: CONFIG
 version: @VERSION@
