@@ -1,5 +1,7 @@
 package edgruberman.bukkit.messageformatter;
 
+import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -42,7 +44,7 @@ final class Formatter implements Listener {
 
         final MessageLevel level = Main.getMessageLevel(event.getClass().getSimpleName() + "." + event.getResult().name());
         String message = Main.getMessageFormat(event.getClass().getSimpleName() + "." + event.getResult().name());
-        final ChatColor color = MessageManager.getDispatcher().getChannelConfiguration(Channel.Type.PLAYER, this.plugin).getColor(level);
+        final List<ChatColor> color = MessageManager.getDispatcher().getChannelConfiguration(Channel.Type.PLAYER, this.plugin).getColor(level);
 
         message = String.format(message, event.getKickMessage());
         message = MessageDisplay.translate(color, message);
@@ -72,7 +74,7 @@ final class Formatter implements Listener {
 
         final MessageLevel level = Main.getMessageLevel(event.getClass().getSimpleName());
 
-        final ChatColor base = MessageManager.getDispatcher().getChannelConfiguration(Channel.Type.PLAYER, this.plugin).getColor(level);
+        final List<ChatColor> base = MessageManager.getDispatcher().getChannelConfiguration(Channel.Type.PLAYER, this.plugin).getColor(level);
         String reason = String.format(Main.getMessageFormat(event.getClass().getSimpleName() + ".reason"), event.getReason());
         reason = MessageDisplay.translate(base, reason);
         event.setReason(reason);
