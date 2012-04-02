@@ -25,7 +25,7 @@ import edgruberman.bukkit.messagemanager.MessageManager;
 
 public final class Main extends JavaPlugin {
 
-    private static final String MINIMUM_VERSION_CONFIG = "2.2.0b8";
+    private static final String MINIMUM_VERSION_CONFIG = "2.2.0";
 
     public static MessageManager messageManager;
 
