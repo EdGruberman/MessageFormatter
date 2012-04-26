@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
@@ -64,6 +65,12 @@ final class Formatter implements Listener {
         String message = String.format(Main.getMessageFormat(event.getClass().getSimpleName()), event.getMessage(), Main.formatSender(event.getPlayer()));
         message = Main.formatColors(event.getPlayer(), message);
         event.setMessage(message);
+    }
+
+    @EventHandler
+    public void onPlayerDeath(final PlayerDeathEvent event) {
+        final String message = String.format(Main.getMessageFormat(event.getClass().getSimpleName()), event.getDeathMessage());
+        event.setDeathMessage(message);
     }
 
     @EventHandler

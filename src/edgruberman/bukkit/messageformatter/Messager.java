@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
@@ -31,7 +32,7 @@ final class Messager implements Listener {
     public void onPlayerChat(final PlayerChatEvent event) {
         if (event.isCancelled() || event.getMessage() == null) return;
 
-        PlayerChat custom = new PlayerChat(event.getPlayer(), event.getMessage());
+        final PlayerChat custom = new PlayerChat(event.getPlayer(), event.getMessage());
         Bukkit.getServer().getPluginManager().callEvent(custom);
         if (custom.isCancelled()) return;
 
@@ -39,6 +40,14 @@ final class Messager implements Listener {
 
         Main.messageManager.broadcast(event.getMessage(), Main.getMessageLevel(event.getClass().getSimpleName()));
         event.setMessage(null);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerDeath(final PlayerDeathEvent event) {
+        if (event.getDeathMessage() == null) return;
+
+        Main.messageManager.broadcast(event.getDeathMessage(), Main.getMessageLevel(event.getClass().getSimpleName()));
+        event.setDeathMessage(null);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

@@ -14,6 +14,10 @@ local:
     level: INFO
     format: '#&6Local&_# %2$s: %1$s' # 1 = Message, 2 = Formatted Name
     distance: 100
+PlayerDeathEvent:
+    priority: Normal
+    level: EVENT
+    format: '%1$s' # 1 = Death Message
 PlayerChatEvent:
     priority: Normal
     level: INFO
