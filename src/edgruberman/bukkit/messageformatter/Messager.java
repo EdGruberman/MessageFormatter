@@ -9,14 +9,20 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import edgruberman.bukkit.messagemanager.MessageManager;
 
 /**
  * Broadcasts formatted messages through the MessageManager interface.
  */
 final class Messager implements Listener {
 
+    final Plugin plugin;
+
     Messager(final JavaPlugin plugin) {
+        this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -24,13 +30,13 @@ final class Messager implements Listener {
     public void onPlayerJoin(final PlayerJoinEvent event) {
         if (event.getJoinMessage() == null) return;
 
-        Main.messageManager.broadcast(event.getJoinMessage(), Main.getMessageLevel(event.getClass().getSimpleName()));
+        MessageManager.of(this.plugin).broadcast(event.getJoinMessage(), Main.getMessageLevel(event.getClass().getSimpleName()));
         event.setJoinMessage(null);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerChat(final PlayerChatEvent event) {
-        if (event.isCancelled() || event.getMessage() == null) return;
+        if (event.getMessage() == null) return;
 
         final PlayerChat custom = new PlayerChat(event.getPlayer(), event.getMessage());
         Bukkit.getServer().getPluginManager().callEvent(custom);
@@ -38,7 +44,7 @@ final class Messager implements Listener {
 
         event.setCancelled(true);
 
-        Main.messageManager.broadcast(event.getMessage(), Main.getMessageLevel(event.getClass().getSimpleName()));
+        MessageManager.of(this.plugin).broadcast(event.getMessage(), Main.getMessageLevel(event.getClass().getSimpleName()));
         event.setMessage(null);
     }
 
@@ -46,15 +52,15 @@ final class Messager implements Listener {
     public void onPlayerDeath(final PlayerDeathEvent event) {
         if (event.getDeathMessage() == null) return;
 
-        Main.messageManager.broadcast(event.getDeathMessage(), Main.getMessageLevel(event.getClass().getSimpleName()));
+        MessageManager.of(this.plugin).broadcast(event.getDeathMessage(), Main.getMessageLevel(event.getClass().getSimpleName()));
         event.setDeathMessage(null);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerKick(final PlayerKickEvent event) {
-        if (event.isCancelled() || event.getLeaveMessage() == null) return;
+        if (event.getLeaveMessage() == null) return;
 
-        Main.messageManager.broadcast(event.getLeaveMessage(), Main.getMessageLevel(event.getClass().getSimpleName()));
+        MessageManager.of(this.plugin).broadcast(event.getLeaveMessage(), Main.getMessageLevel(event.getClass().getSimpleName()));
         event.setLeaveMessage(null);
     }
 
@@ -71,7 +77,7 @@ final class Messager implements Listener {
     public void onPlayerQuit(final PlayerQuitEvent event) {
         if (event.getQuitMessage() == null) return;
 
-        Main.messageManager.broadcast(event.getQuitMessage(), Main.getMessageLevel(event.getClass().getSimpleName()));
+        MessageManager.of(this.plugin).broadcast(event.getQuitMessage(), Main.getMessageLevel(event.getClass().getSimpleName()));
         event.setQuitMessage(null);
     }
 

@@ -1,8 +1,5 @@
 package edgruberman.bukkit.messageformatter;
 
-import java.util.logging.Handler;
-import java.util.logging.Level;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -40,7 +37,7 @@ public final class Main extends JavaPlugin {
         Main.configurationFile = new ConfigurationFile(this);
         Main.configurationFile.setMinVersion(Main.MINIMUM_VERSION_CONFIG);
         Main.configurationFile.load();
-        this.setLoggingLevel();
+        Main.configurationFile.setLoggingLevel();
 
         Main.messageManager = new MessageManager(this);
 
@@ -70,19 +67,6 @@ public final class Main extends JavaPlugin {
         Formatter.cancelQuitAfterKick = config.getBoolean("PlayerKickEvent.cancelQuit", Formatter.cancelQuitAfterKick);
 
         Local.distance = config.getInt("local.distance", Local.distance);
-    }
-
-    private void setLoggingLevel() {
-        final String name = Main.configurationFile.getConfig().getString("logLevel", "INFO");
-        Level level = MessageLevel.parse(name);
-        if (level == null) level = Level.INFO;
-
-        // Only set the parent handler lower if necessary, otherwise leave it alone for other configurations that have set it.
-        for (final Handler h : this.getLogger().getParent().getHandlers())
-            if (h.getLevel().intValue() > level.intValue()) h.setLevel(level);
-
-        this.getLogger().setLevel(level);
-        this.getLogger().log(Level.CONFIG, "Logging level set to: " + this.getLogger().getLevel());
     }
 
     public static MessageLevel getMessageLevel(final String path) {

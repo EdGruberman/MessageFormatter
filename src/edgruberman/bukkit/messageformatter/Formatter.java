@@ -30,11 +30,6 @@ final class Formatter implements Listener {
     private final Plugin plugin;
 
     Formatter(final Plugin plugin) {
-        // TODO Adjust event priorities according to configuration
-        // for (Method method : this.getClass().getDeclaredMethods()) {
-        //    if (method.getParameterTypes().length != 1 || !(method.getParameterTypes()[0].isInstance(Event.class))) continue;
-        //    method.getAnnotation(EventHandler.class).
-        //}
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
@@ -58,10 +53,8 @@ final class Formatter implements Listener {
         event.setJoinMessage(message);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerChat(final PlayerChatEvent event) {
-        if (event.isCancelled()) return;
-
         String message = String.format(Main.getMessageFormat(event.getClass().getSimpleName()), event.getMessage(), Main.formatSender(event.getPlayer()));
         message = Main.formatColors(event.getPlayer(), message);
         event.setMessage(message);
@@ -73,10 +66,8 @@ final class Formatter implements Listener {
         event.setDeathMessage(message);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerKick(final PlayerKickEvent event) {
-        if (event.isCancelled()) return;
-
         if (Formatter.cancelQuitAfterKick) Formatter.cancelNextQuit = true;
 
         final MessageLevel level = Main.getMessageLevel(event.getClass().getSimpleName());
