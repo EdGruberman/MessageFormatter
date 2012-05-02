@@ -89,6 +89,8 @@ final class Formatter implements Listener {
             return;
         }
 
+        if (event.getQuitMessage() == null) return;
+
         final String message = String.format(Main.getMessageFormat(event.getClass().getSimpleName()), Main.formatSender(event.getPlayer()));
         event.setQuitMessage(message);
     }
