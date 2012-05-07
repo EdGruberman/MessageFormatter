@@ -48,7 +48,9 @@ PlayerLoginEvent:
         format: '&O%1$s&_'
     KICK_WHITELIST:
         level: WARNING
-        format: '&O%1$s&_'
+        format: '&O%1$s&_' # 1 = Reason
+        broadcast:
+            format: '&ODisconnected %1$s due to whitelist' # 1 = Player Name
     KICK_OTHER:
         level: SEVERE
         format: '&O%1$s&_'

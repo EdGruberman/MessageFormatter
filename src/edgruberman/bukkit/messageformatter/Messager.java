@@ -8,10 +8,13 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import edgruberman.bukkit.messagemanager.MessageLevel;
 import edgruberman.bukkit.messagemanager.MessageManager;
 
 /**
@@ -24,6 +27,18 @@ final class Messager implements Listener {
     Messager(final JavaPlugin plugin) {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerLogin(final PlayerLoginEvent login) {
+        if (login.getResult().equals(Result.ALLOWED)) return;
+
+        String message = Main.getMessageFormat(login.getClass().getSimpleName() + "." + login.getResult().name() + ".broadcast");
+        if (message == null || message.length() == 0) return;
+
+        message = String.format(message, login.getPlayer().getName());
+        final MessageLevel level = Main.getMessageLevel(login.getClass().getSimpleName() + "." + login.getResult().name());
+        MessageManager.of(this.plugin).broadcast(message, level);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
