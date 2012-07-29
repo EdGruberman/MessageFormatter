@@ -1,48 +1,47 @@
 name: @NAME@
 description: Chat message formatting
-depend: [MessageManager]
+loadbefore: [PlayerActivity]
+softdepend: [MessageManager]
 version: @VERSION@
 author: @AUTHOR@
-main: edgruberman.bukkit.messageformatter.Main
+main: @MAIN@
 commands:
-    say:
+    'messageformatter:say':
         description: Broadcast a message to all players
         permission: messageformatter.say
         usage: /<command> <Message>
-    me:
+    'messageformatter:me':
         description: Broadcast an action to all players
         permission: messageformatter.me
         usage: /<command> <Message>
-    tell:
+    'messageformatter:tell':
+        aliases: [tell, t, whisper, w, private, pm]
         description: Send a private message to a player
         permission: messageformatter.tell
         usage: /<command> <Player> <Message>
-        aliases: t
-    reply:
+    'messageformatter:reply':
+        aliases: [reply, r]
         description: Send a private message to the last player that sent you a private message
         permission: messageformatter.reply
         usage: /<command> <Message>
-        aliases: r
-    local:
+    'messageformatter:local':
+        aliases: [local, l]
         description: Broadcast a message only to players close by
         permission: messageformatter.local
         usage: /<command> <Message>
-        aliases: l
-    broadcast:
-        description: Broadcast a message to all players with formatting options
+    'messageformatter:broadcast':
+        aliases: [broadcast]
+        description: Broadcast a message to all players anonymously
         permission: messageformatter.broadcast
-        usage: /<command> [[(+|-)timestamp ]<Level> ]<Message>
-    send:
-        description: Send a private message to a player with formatting options
+        usage: /<command> <Message>
+    'messageformatter:send':
+        aliases: [send]
+        description: Send a private message to a player anonymously
         permission: messageformatter.send
-        usage: /<command> <Player> [[(+|-)timestamp ]<Level> ]<Message>
-    messageformatter:
-        description: Manage plugin settings
-        permission: messageformatter.messageformatter
-        usage: /<command> reload - Reload plugin configuration
+        usage: /<command> <Player> <Message>
 permissions:
     messageformatter.colors:
-        description: Can use color codes in commands and chat
+        description: Can use ampersand color codes in commands and chat
         default: op
     messageformatter.say:
         description: Can use say command
@@ -65,11 +64,3 @@ permissions:
     messageformatter.send:
         description: Can use send command
         default: op
-    messageformatter.messageformatter:
-        description: Can use messageformatter command
-        default: op
-    messageformatter.messageformatter.reload:
-        description: Can use reload action of messageformatter command
-        default: op
-        children:
-            messageformatter.messageformatter: true

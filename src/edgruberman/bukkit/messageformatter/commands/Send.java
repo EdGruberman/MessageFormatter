@@ -1,54 +1,43 @@
 package edgruberman.bukkit.messageformatter.commands;
 
-import org.bukkit.OfflinePlayer;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import edgruberman.bukkit.messageformatter.Main;
-import edgruberman.bukkit.messageformatter.commands.util.Action;
-import edgruberman.bukkit.messageformatter.commands.util.Context;
-import edgruberman.bukkit.messageformatter.commands.util.Parser;
-import edgruberman.bukkit.messagemanager.MessageLevel;
 
-public final class Send extends Action {
+public final class Send implements CommandExecutor {
 
-    public Send(final JavaPlugin plugin) {
-        super(plugin, "send");
+    private final Plugin plugin;
+
+    public Send(final Plugin plugin) {
+        this.plugin = plugin;
     }
 
+    // usage: /<command> <Player> <Message>
     @Override
-    public boolean perform(final Context context) {
-        if (context.arguments.size() < 2) return false;
+    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+        if (args.length < 2) {
+            Main.messenger.tell(sender, "requiresParameter", "<Message>");
+            return false;
+        }
 
-        final OfflinePlayer recipient = Parser.parsePlayer(context, 0);
-        if (recipient == null || recipient.getPlayer() == null || !recipient.getPlayer().isOnline()) {
-            Main.messageManager.send(context.sender, "There is no online player matching the name of: " + context.arguments.get(0), MessageLevel.WARNING, false);
+        if (args.length < 1) {
+            Main.messenger.tell(sender, "requiresParameter", "<Player>");
+            return false;
+        }
+
+        final Player target = Bukkit.getServer().getPlayerExact(args[0]);
+        if (target == null) {
+            Main.messenger.tell(sender, "playerNotFound", args[0]);
             return true;
         }
 
-        int messageStart = 1;
-        boolean isTimestamped = Main.messageManager.applyTimestampDefault;
-        MessageLevel level = Main.messageManager.levelDefault;
-        if (context.arguments.size() >= 3) {
-            if (context.arguments.get(messageStart).toLowerCase().endsWith("timestamp")) {
-                isTimestamped = !context.arguments.get(messageStart).startsWith("-");
-                messageStart++;
-            }
-
-            if (context.arguments.get(messageStart).matches("^%[^%]+%$")) {
-                level = MessageLevel.parse(context.arguments.get(messageStart).substring(1, context.arguments.get(messageStart).length() - 1));
-                if (level == null) {
-                    Main.messageManager.send(context.sender, "Unable to determine message level: " + context.arguments.get(messageStart), MessageLevel.WARNING, false);
-                    return true;
-                }
-                messageStart++;
-            }
-        }
-
-        String message = Parser.join(context.arguments.subList(messageStart, context.arguments.size()));
-        message = Main.formatColors(context.sender, message);
-        if (message.length() == 0) return false;
-
-        Main.messageManager.send(recipient.getPlayer(), message, level, isTimestamped);
+        final String message = Main.messenger.tellMessage(target, Main.formatColors(sender, args));
+        this.plugin.getLogger().finer("#SEND@" + target.getName() + "# " + message);
         return true;
     }
 

@@ -1,116 +1,170 @@
 package edgruberman.bukkit.messageformatter;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import edgruberman.bukkit.messageformatter.commands.Broadcast;
 import edgruberman.bukkit.messageformatter.commands.Local;
 import edgruberman.bukkit.messageformatter.commands.Me;
-import edgruberman.bukkit.messageformatter.commands.MessageFormatter;
 import edgruberman.bukkit.messageformatter.commands.Reply;
 import edgruberman.bukkit.messageformatter.commands.Say;
 import edgruberman.bukkit.messageformatter.commands.Send;
 import edgruberman.bukkit.messageformatter.commands.Tell;
-import edgruberman.bukkit.messagemanager.MessageDisplay;
-import edgruberman.bukkit.messagemanager.MessageLevel;
-import edgruberman.bukkit.messagemanager.MessageManager;
 
 public final class Main extends JavaPlugin {
 
-    private static final String MINIMUM_VERSION_CONFIG = "2.3.0a0";
+    private static final Version MINIMUM_CONFIGURATION = new Version("3.0.0a8");
 
-    public static MessageManager messageManager;
-
-    private static ConfigurationFile configurationFile;
-
-    private static String senderPlayer = null;
-    private static String senderOther = null;
-    private static String senderConsole = null;
+    public static Messenger messenger;
 
     @Override
     public void onEnable() {
-        Main.configurationFile = new ConfigurationFile(this);
-        Main.configurationFile.setMinVersion(Main.MINIMUM_VERSION_CONFIG);
-        Main.configurationFile.load();
-        Main.configurationFile.setLoggingLevel();
+        this.reloadConfig();
+        Main.messenger = Messenger.load(this);
 
-        Main.messageManager = new MessageManager(this);
+        Bukkit.getPluginManager().registerEvents(new Formatter(this.getConfig().getBoolean("quitAfterKick")), this);
 
-        this.configure();
+        this.getCommand("messageformatter:say").setExecutor(new Say());
+        this.getCommand("messageformatter:me").setExecutor(new Me());
+        this.getCommand("messageformatter:local").setExecutor(new Local(this.getConfig().getInt("localRange", 100)));
+        final Reply reply = new Reply(this);
+        this.getCommand("messageformatter:reply").setExecutor(reply);
+        this.getCommand("messageformatter:tell").setExecutor(new Tell(reply));
+        this.getCommand("messageformatter:broadcast").setExecutor(new Broadcast(this));
+        this.getCommand("messageformatter:send").setExecutor(new Send(this));
+    }
+    @Override
+    public void reloadConfig() {
+        this.saveDefaultConfig();
+        super.reloadConfig();
 
-        new Messager(this);
-        new Formatter(this);
+        final Version version = new Version(this.getConfig().getString("version"));
+        if (version.compareTo(Main.MINIMUM_CONFIGURATION) >= 0) {
+            this.setLogLevel(this.getConfig().getString("logLevel"));
+            return;
+        }
 
-        new Say(this);
-        new Me(this);
-        new Tell(this);
-        new Reply(this);
-        new Local(this);
-        new Broadcast(this);
-        new Send(this);
-
-        new MessageFormatter(this);
+        this.archiveConfig("config.yml", version);
+        this.saveDefaultConfig();
+        super.reloadConfig();
     }
 
-    public void configure() {
-        final FileConfiguration config = Main.configurationFile.getConfig();
-
-        Main.senderPlayer = config.getString("senders.player");
-        Main.senderOther = config.getString("senders.other");
-        Main.senderConsole = config.getString("senders.console");
-
-        Formatter.cancelQuitAfterKick = config.getBoolean("PlayerKickEvent.cancelQuit", Formatter.cancelQuitAfterKick);
-
-        Local.distance = config.getInt("local.distance", Local.distance);
+    @Override
+    public void saveDefaultConfig() {
+        this.extractConfig("config.yml", false);
     }
 
-    public static MessageLevel getMessageLevel(final String path) {
-        return MessageLevel.parse(Main.configurationFile.getConfig().getString(path + ".level"));
+    private void archiveConfig(final String resource, final Version version) {
+        final String backupName = "%1$s - Archive version %2$s - %3$tY%3$tm%3$tdT%3$tH%3$tM%3$tS.yml";
+        final File backup = new File(this.getDataFolder(), String.format(backupName, resource.replaceAll("(?i)\\.yml$", ""), version, new Date()));
+        final File existing = new File(this.getDataFolder(), resource);
+
+        if (!existing.renameTo(backup))
+            throw new IllegalStateException("Unable to archive configuration file \"" + existing.getPath() + "\" with version \"" + version + "\" to \"" + backup.getPath() + "\"");
+
+        this.getLogger().warning("Archived configuration file \"" + existing.getPath() + "\" with version \"" + version + "\" to \"" + backup.getPath() + "\"");
     }
 
-    public static String getMessageFormat(final String path) {
-        return Main.configurationFile.getConfig().getString(path + ".format");
+    private void extractConfig(final String resource, final boolean replace) {
+        final Charset source = Charset.forName("UTF-8");
+        final Charset target = Charset.defaultCharset();
+        if (target.equals(source)) {
+            super.saveResource(resource, replace);
+            return;
+        }
+
+        final File config = new File(this.getDataFolder(), resource);
+        if (config.exists()) return;
+
+        final byte[] buffer = new byte[1024]; int read;
+        try {
+            final InputStream in = new BufferedInputStream(this.getResource(resource));
+            final OutputStream out = new BufferedOutputStream(new FileOutputStream(config));
+            while((read = in.read(buffer)) > 0) out.write(target.encode(source.decode(ByteBuffer.wrap(buffer, 0, read))).array());
+            out.close(); in.close();
+
+        } catch (final Exception e) {
+            throw new IllegalArgumentException("Could not extract configuration file \"" + resource + "\" to " + config.getPath() + "\";" + e.getClass().getName() + ": " + e.getMessage());
+        }
     }
 
-    public static EventPriority getEventPriority(final String path) {
-        return EventPriority.valueOf(Main.configurationFile.getConfig().getString(path + ".priority"));
+    private void setLogLevel(final String name) {
+        Level level;
+        try { level = Level.parse(name); } catch (final Exception e) {
+            level = Level.INFO;
+            this.getLogger().warning("Log level defaulted to " + level.getName() + "; Unrecognized java.util.logging.Level: " + name);
+        }
+
+        // Only set the parent handler lower if necessary, otherwise leave it alone for other configurations that have set it
+        for (final Handler h : this.getLogger().getParent().getHandlers())
+            if (h.getLevel().intValue() > level.intValue()) h.setLevel(level);
+
+        this.getLogger().setLevel(level);
+        this.getLogger().config("Log level set to: " + this.getLogger().getLevel());
     }
 
     public static String formatSender(final CommandSender sender) {
+        String formatted = null;
+
         if (sender instanceof ConsoleCommandSender)
-            if (Main.senderConsole != null)
-                return String.format(Main.senderConsole, sender.getName());
+            formatted = String.format(Main.messenger.getFormat("names.console"), sender.getName());
 
         if (sender instanceof Player)
-            if (Main.senderPlayer != null)
-                return String.format(Main.senderPlayer, ((Player) sender).getDisplayName());
+            formatted = String.format(Main.messenger.getFormat("names.player"), ((Player) sender).getDisplayName());
 
-        if (Main.senderOther != null)
-            return String.format(Main.senderOther, sender.getName());
+        if (formatted == null)
+            formatted = String.format(Main.messenger.getFormat("names.other"), sender.getName());
+
+        if (formatted != null) return formatted;
 
         return sender.getName();
     }
 
-    /**
-     * Strip any color codes from message if sender does not have permission to
-     * use colors.
-     *
-     * @param sender
-     * @param message
-     * @return
-     */
     public static String formatColors(final CommandSender sender, final String message) {
-        if (sender.hasPermission("messageformatter.colors")) return message;
+        if (!message.startsWith("&")) return message;
 
-        String stripped = ChatColor.stripColor(message);
-        stripped = MessageDisplay.strip(message);
+        if (!sender.hasPermission("messageformatter.colors")) return message;
 
-        return stripped;
+        return ChatColor.translateAlternateColorCodes('&', message.substring(1));
+    }
+
+    public static String formatColors(final CommandSender sender, final String[] args) {
+        return Main.formatColors(sender, Main.join(Arrays.asList(args), " "));
+    }
+
+    /**
+     * Combine all the elements of a list together with a delimiter between each
+     *
+     * @param list list of elements to join
+     * @param delim delimiter to place between each element
+     * @return string combined with all elements and delimiters
+     */
+    private static String join(final List<String> list, final String delim) {
+        if (list == null || list.isEmpty()) return "";
+
+        final StringBuilder sb = new StringBuilder();
+        for (final String s : list) sb.append(s + delim);
+        sb.delete(sb.length() - delim.length(), sb.length());
+
+        return sb.toString();
     }
 
 }

@@ -1,0 +1,35 @@
+logLevel: CONFIG
+localRange: 100
+quitAfterKick: false
+messages:
+    names:
+        player: '%1$s§r' # 1 = Player Display Name
+        other: '(%1$s§r)' # 1 = Sender Name
+        console: '§5§oConsole§r' # 1 = Console Name
+    local: '§8%1$tH:%1$tM:%1$tS§r #§6Local§r# %2$s§r: %3$s' # 2 = Formatted Name, 3 = Message
+    say: '§8%1$tH:%1$tM:%1$tS§r %2$s] %3$s' # 2 = Formatted Name, 3 = Message
+    me: '§8%1$tH:%1$tM:%1$tS§r * %3$s %3s' # 2 = Formatted Name, 3 = Message
+    tellRecipient: '§8%1$tH:%1$tM:%1$tS§r %2$s §7§otells§r you] %4$s' # 2 = Formatted Sender Name, 3 = Formatted Recipient Name, 4 = Message
+    tellSender: '§8%1$tH:%1$tM:%1$tS§r You §7§otell§r %3$s] %4$s' # 2 = Formatted Sender Name, 3 = Formatted Recipient Name, 4 = Message
+    death: '§8%1$tH:%1$tM:%1$tS %3$s' # 2 = Formatted Name, 3 = Death Message
+    chat: '§8%1$tH:%1$tM:%1$tS§r <%2$s> %3$s' # 2 = Formatted Name, 3 = Message
+    join: '§8%1$tH:%1$tM:%1$tS§r %2$s §6joined§r the server' # 2 = Formatted Name
+    quit: '§8%1$tH:%1$tM:%1$tS§r %2$s §9left§r the server' # 2 = Formatted Name
+    kick:
+        broadcast: '§8%1$tH:%1$tM:%1$tS§r %2$s was §ckicked§r (%3$s)' # 2 = Formatted Name, 3 = Formatted Reason
+        reason: '§o%1$s§r' # 1 = Reason
+    login:
+        KICK_BANNED:
+            reason: '§o%1$s§r' # 1 = Reason
+        KICK_FULL:
+            reason: '§o%1$s§r' # 1 = Reason
+        KICK_WHITELIST:
+            reason: '§o%1$s§r' # 1 = Reason
+            broadcast: '§8%1$tH:%1$tM:%1$tS§r §e§oDisconnected §r%2$s §e§odue to whitelist' # 2 = Formatted Name, 3 = Formatted Reason
+        KICK_OTHER:
+            reason: '§o%1$s§r' # 1 = Reason
+    requiresParameter: '-> Required §cparameter missing§r: %2$s' # 2 = Parameter
+    requiresPlayer: '-> Command cancelled when §cnot in-game player'
+    playerNotFound: '-> Player §enot found§r: %2$s' # 2 = <Player>
+    replyNotAvailable: '-> No one to reply to'
+version: @VERSION@

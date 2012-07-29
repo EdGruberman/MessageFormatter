@@ -1,55 +1,42 @@
 package edgruberman.bukkit.messageformatter.commands;
 
-import org.bukkit.OfflinePlayer;
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.entity.Player;
 
 import edgruberman.bukkit.messageformatter.Main;
-import edgruberman.bukkit.messageformatter.commands.util.Action;
-import edgruberman.bukkit.messageformatter.commands.util.Context;
-import edgruberman.bukkit.messageformatter.commands.util.Parser;
-import edgruberman.bukkit.messagemanager.MessageLevel;
 
-public final class Tell extends Action {
+public final class Tell implements CommandExecutor {
 
-    public Tell(final JavaPlugin plugin) {
-        super(plugin, "tell");
+    private final Reply reply;
+
+    public Tell(final Reply reply) {
+        this.reply = reply;
     }
 
+    // usage: /<command> <Player> <Message>
     @Override
-    public boolean perform(final Context context) {
-        // Must supply at least two arguments: /<command> <Player> <Message>
-        if (context.arguments.size() < 2) return false;
+    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+        if (args.length < 2) {
+            Main.messenger.tell(sender, "requiresParameter", "<Message>");
+            return false;
+        }
 
-        final OfflinePlayer recipient = Parser.parsePlayer(context, 0);
-        if (recipient == null || recipient.getPlayer() == null || !recipient.getPlayer().isOnline()) {
-            Main.messageManager.send(context.sender, "There is no online player matching the name of: " + context.arguments.get(0), MessageLevel.WARNING, false);
+        if (args.length < 1) {
+            Main.messenger.tell(sender, "requiresParameter", "<Player>");
+            return false;
+        }
+
+        final Player recipient = Bukkit.getServer().getPlayerExact(args[0]);
+        if (recipient == null) {
+            Main.messenger.tell(sender, "playerNotFound", args[0]);
             return true;
         }
 
-        String message = Parser.join(context.arguments.subList(1, context.arguments.size())).trim();
-        message = Main.formatColors(context.sender, message);
-        Tell.send(recipient.getPlayer(), context.sender, message);
+        this.reply.send(recipient, sender, Main.formatColors(sender, args));
         return true;
-    }
-
-    static void send(final CommandSender recipient, final CommandSender sender, final String message) {
-        // Sender
-        Main.messageManager.send(
-                sender
-                , String.format(Main.getMessageFormat("tell.sender"), message, Main.formatSender(sender), Main.formatSender(recipient))
-                , Main.getMessageLevel("tell")
-        );
-
-        // Recipient
-        Main.messageManager.send(
-                recipient
-                , String.format(Main.getMessageFormat("tell.recipient"), message, Main.formatSender(sender), Main.formatSender(recipient))
-                , Main.getMessageLevel("tell")
-        );
-
-        Reply.last.put(sender, recipient);
-        Reply.last.put(recipient, sender);
     }
 
 }

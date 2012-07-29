@@ -1,9 +1,8 @@
 package edgruberman.bukkit.messageformatter;
 
-import java.util.List;
-
-import org.bukkit.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChatEvent;
@@ -12,87 +11,87 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.messagemanager.MessageDisplay;
-import edgruberman.bukkit.messagemanager.MessageLevel;
-import edgruberman.bukkit.messagemanager.MessageManager;
-import edgruberman.bukkit.messagemanager.channels.Channel;
-
-/**
- * Formats messages according to the plugin's configuration.
- */
+/** Formats messages according to the plugin's configuration */
 final class Formatter implements Listener {
 
-    static boolean cancelQuitAfterKick = false;
-    static boolean cancelNextQuit = false;
+    private final boolean quitAfterKick;
+    private boolean hideNextQuit = false;
 
-    private final Plugin plugin;
-
-    Formatter(final Plugin plugin) {
-        this.plugin = plugin;
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    Formatter(final boolean quitAfterKick) {
+        this.quitAfterKick = quitAfterKick;
     }
 
-    @EventHandler
-    public void onPlayerLogin(final PlayerLoginEvent event) {
-        if (event.getResult().equals(Result.ALLOWED)) return;
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerLogin(final PlayerLoginEvent login) {
+        if (login.getResult() == Result.ALLOWED) return;
 
-        final MessageLevel level = Main.getMessageLevel(event.getClass().getSimpleName() + "." + event.getResult().name());
-        String message = Main.getMessageFormat(event.getClass().getSimpleName() + "." + event.getResult().name());
-        final List<ChatColor> color = MessageManager.getDispatcher().getChannelConfiguration(Channel.Type.PLAYER, this.plugin).getColor(level);
-
-        message = String.format(message, event.getKickMessage());
-        message = MessageDisplay.translate(color, message);
-        event.setKickMessage(message);
+        final String reason = String.format(Main.messenger.getFormat("login." + login.getResult().name() + ".reason"), login.getKickMessage());
+        Main.messenger.broadcast("login." + login.getResult().name() + ".broadcast", Main.formatSender(login.getPlayer()), reason);
+        login.setKickMessage(reason);
     }
 
-    @EventHandler
-    public void onPlayerJoin(final PlayerJoinEvent event) {
-        final String message = String.format(Main.getMessageFormat(event.getClass().getSimpleName()), Main.formatSender(event.getPlayer()));
-        event.setJoinMessage(message);
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerJoin(final PlayerJoinEvent join) {
+        if (join.getJoinMessage() == null) return;
+
+        Main.messenger.broadcast("join", Main.formatSender(join.getPlayer()));
+        join.setJoinMessage(null);
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerChat(final PlayerChatEvent event) {
-        String message = String.format(Main.getMessageFormat(event.getClass().getSimpleName()), event.getMessage(), Main.formatSender(event.getPlayer()));
-        message = Main.formatColors(event.getPlayer(), message);
-        event.setMessage(message);
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPlayerChat(final PlayerChatEvent chat) {
+        if (chat.getMessage() == null) return;
+
+        final PlayerChat custom = new PlayerChat(chat.getPlayer(), chat.getMessage());
+        Bukkit.getServer().getPluginManager().callEvent(custom);
+        if (custom.isCancelled()) return;
+
+        Main.messenger.broadcast("chat", Main.formatSender(chat.getPlayer()), chat.getMessage());
+        chat.setCancelled(true);
+        chat.setMessage(null);
     }
 
-    @EventHandler
-    public void onPlayerDeath(final PlayerDeathEvent event) {
-        final String message = String.format(Main.getMessageFormat(event.getClass().getSimpleName()), event.getDeathMessage());
-        event.setDeathMessage(message);
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerDeath(final PlayerDeathEvent death) {
+        if (death.getDeathMessage() == null) return;
+
+        Main.messenger.broadcast("death", Main.formatSender(death.getEntity()), death.getDeathMessage());
+        death.setDeathMessage(null);
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerKick(final PlayerKickEvent event) {
-        if (Formatter.cancelQuitAfterKick) Formatter.cancelNextQuit = true;
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPlayerKick(final PlayerKickEvent kick) {
+        if (!this.quitAfterKick) this.hideNextQuit = true;
+        if (kick.getReason() == null) return;
 
-        final MessageLevel level = Main.getMessageLevel(event.getClass().getSimpleName());
-
-        final List<ChatColor> base = MessageManager.getDispatcher().getChannelConfiguration(Channel.Type.PLAYER, this.plugin).getColor(level);
-        String reason = String.format(Main.getMessageFormat(event.getClass().getSimpleName() + ".reason"), event.getReason());
-        reason = MessageDisplay.translate(base, reason);
-        event.setReason(reason);
-
-        final String message = String.format(Main.getMessageFormat(event.getClass().getSimpleName()), Main.formatSender(event.getPlayer()), reason);
-        event.setLeaveMessage(message);
+        final String reason = String.format(Main.messenger.getFormat("kick.reason"), kick.getReason());
+        Main.messenger.broadcast("kick.broadcast", Main.formatSender(kick.getPlayer()), reason);
+        kick.setReason(reason);
+        kick.setLeaveMessage(null);
     }
 
-    @EventHandler
-    public void onPlayerQuit(final PlayerQuitEvent event) {
-        if (Formatter.cancelNextQuit) {
-            event.setQuitMessage(null);
-            Formatter.cancelNextQuit = false;
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerKickMonitor(final PlayerKickEvent kick) {
+        if (!kick.isCancelled() && kick.getLeaveMessage() != null) return;
+
+        // Do not cancel next quit message since kick message was never displayed
+        this.hideNextQuit = false;
+        return;
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerQuit(final PlayerQuitEvent quit) {
+        if (this.hideNextQuit) {
+            quit.setQuitMessage(null);
+            this.hideNextQuit = false;
             return;
         }
 
-        if (event.getQuitMessage() == null) return;
+        if (quit.getQuitMessage() == null) return;
 
-        final String message = String.format(Main.getMessageFormat(event.getClass().getSimpleName()), Main.formatSender(event.getPlayer()));
-        event.setQuitMessage(message);
+        Main.messenger.broadcast("quit", Main.formatSender(quit.getPlayer()));
+        quit.setQuitMessage(null);
     }
 
 }

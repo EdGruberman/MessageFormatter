@@ -1,28 +1,22 @@
 package edgruberman.bukkit.messageformatter.commands;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 
 import edgruberman.bukkit.messageformatter.Main;
-import edgruberman.bukkit.messageformatter.commands.util.Action;
-import edgruberman.bukkit.messageformatter.commands.util.Context;
-import edgruberman.bukkit.messageformatter.commands.util.Parser;
 
-public final class Say extends Action {
+public final class Say implements CommandExecutor {
 
-    public Say(final JavaPlugin plugin) {
-        super(plugin, "say");
-    }
-
+    // usage: /<command> <Message>
     @Override
-    public boolean perform(final Context context) {
-        String message = Parser.join(context.arguments);
-        message = Main.formatColors(context.sender, message);
-        if (message.length() < 1) return false;
+    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+        if (args.length < 1) {
+            Main.messenger.tell(sender, "requiresParameter", "<Message>");
+            return false;
+        }
 
-        Main.messageManager.broadcast(
-                String.format(Main.getMessageFormat("say"), message.trim(), Main.formatSender(context.sender))
-                , Main.getMessageLevel("say")
-        );
+        Main.messenger.broadcast("say", Main.formatSender(sender), Main.formatColors(sender, args));
         return true;
     }
 

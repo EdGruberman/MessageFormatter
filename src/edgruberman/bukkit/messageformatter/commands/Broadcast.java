@@ -1,48 +1,34 @@
 package edgruberman.bukkit.messageformatter.commands;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import java.util.GregorianCalendar;
+
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 
 import edgruberman.bukkit.messageformatter.Main;
-import edgruberman.bukkit.messageformatter.commands.util.Action;
-import edgruberman.bukkit.messageformatter.commands.util.Context;
-import edgruberman.bukkit.messageformatter.commands.util.Parser;
-import edgruberman.bukkit.messagemanager.MessageLevel;
 
-public final class Broadcast extends Action {
+public final class Broadcast implements CommandExecutor {
 
-    public Broadcast(final JavaPlugin plugin) {
-        super(plugin, "broadcast");
+    private final Plugin plugin;
+
+    public Broadcast(final Plugin plugin) {
+        this.plugin = plugin;
     }
 
+    // usage: /<command> <Message>
     @Override
-    public boolean perform(final Context context) {
-        if (context.arguments.size() < 1) return false;
-
-        int messageStart = 0;
-        boolean isTimestamped = Main.messageManager.applyTimestampDefault;
-        MessageLevel level = Main.messageManager.levelDefault;
-        if (context.arguments.size() >= 2) {
-            if (context.arguments.get(messageStart).toLowerCase().endsWith("timestamp")) {
-                isTimestamped = !context.arguments.get(messageStart).startsWith("-");
-                messageStart++;
-            }
-
-            if (context.arguments.get(messageStart).matches("^%[^%]+%$")) {
-                level = MessageLevel.parse(context.arguments.get(messageStart).substring(1, context.arguments.get(messageStart).length() - 1));
-                if (level == null) {
-                    Main.messageManager.send(context.sender, "Unable to determine message level: " + context.arguments.get(messageStart), MessageLevel.WARNING, false);
-                    return true;
-                }
-
-                messageStart++;
-            }
+    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+        if (args.length < 1) {
+            Main.messenger.tell(sender, "requiresParameter", "<Message>");
+            return false;
         }
 
-        String message = Parser.join(context.arguments.subList(messageStart, context.arguments.size()));
-        message = Main.formatColors(context.sender, message);
-        if (message.length() == 0) return false;
-
-        Main.messageManager.broadcast(message, level, isTimestamped);
+        final String format = Main.formatColors(sender, args);
+        final int count = Main.messenger.broadcastMessage(format);
+        final String message = Main.messenger.format(format, new GregorianCalendar(Main.messenger.getZone(null)));
+        this.plugin.getLogger().finer("#BROADCAST(" + count + ")<" + sender.getName() + "# " + message);
         return true;
     }
 
