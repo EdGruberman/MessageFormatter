@@ -43,9 +43,10 @@ public final class Reply implements CommandExecutor, Listener {
         }
 
         final String name = recipient.getName();
-        if (recipient instanceof Player && !((Player) recipient).isOnline()) {
+        if (recipient instanceof Player) {
             // Ensure latest instance of CommandSender is used for players after they reconnect
             recipient = Bukkit.getPlayerExact(name);
+            if (recipient != null && !((Player) recipient).isOnline()) recipient = null;
         }
 
         if (recipient == null) {
@@ -64,11 +65,11 @@ public final class Reply implements CommandExecutor, Listener {
         final Level level = (sender instanceof ConsoleCommandSender || recipient instanceof ConsoleCommandSender ? Level.FINEST : Level.FINER);
         this.plugin.getLogger().log(level, "#TELL(" + sender.getName() + ">" + recipient.getName() + ")# " + message);
 
-        for (final String format : Main.messenger.getFormatList("tell.sender"))
-            Main.messenger.tellMessage(sender, format, senderFormatted, recipientFormatted, message);
-
         for (final String format : Main.messenger.getFormatList("tell.recipient"))
             Main.messenger.tellMessage(recipient, format, senderFormatted, recipientFormatted, message);
+
+        for (final String format : Main.messenger.getFormatList("tell.sender"))
+            Main.messenger.tellMessage(sender, format, senderFormatted, recipientFormatted, message);
 
         this.fromTo.put(sender, recipient);
         this.fromTo.put(recipient, sender);

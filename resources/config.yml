@@ -10,8 +10,8 @@ messages:
     say: '§8%1$tH:%1$tM:%1$tS§r <%2$s> %3$s' # 2 = Formatted Name, 3 = Message
     me: '§8%1$tH:%1$tM:%1$tS§r * %2$s %3$s' # 2 = Formatted Name, 3 = Message
     tell: # 2 = Formatted Sender Name, 3 = Formatted Recipient Name, 4 = Message
-        recipient: '§8%1$tH:%1$tM:%1$tS§r %2$s §7§otells§r you] %4$s'
-        sender: '§8%1$tH:%1$tM:%1$tS§r You §7§otell§r %3$s] %4$s'
+        recipient: '§8%1$tH:%1$tM:%1$tS§r <%2$s §7§otells §7you§r> %4$s'
+        sender: '§8%1$tH:%1$tM:%1$tS§r <You §7§otell §7%3$s§r> %4$s'
     death: '§8%1$tH:%1$tM:%1$tS %3$s' # 2 = Formatted Name, 3 = Death Message
     chat: '§8%1$tH:%1$tM:%1$tS§r <%2$s> %3$s' # 2 = Formatted Name, 3 = Message
     join: '§8%1$tH:%1$tM:%1$tS§r %2$s §6joined§r the server' # 2 = Formatted Name
