@@ -11,22 +11,23 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 
 /** Formats messages according to the plugin's configuration */
 final class Formatter implements Listener {
 
-    private final boolean quitAfterKick;
+    private final Plugin plugin;
     private boolean hideNextQuit = false;
 
-    Formatter(final boolean quitAfterKick) {
-        this.quitAfterKick = quitAfterKick;
+    Formatter(final Plugin plugin) {
+        this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(final PlayerLoginEvent login) {
         if (login.getResult() == Result.ALLOWED) return;
 
-        final String reason = String.format(Main.messenger.getFormat("login." + login.getResult().name() + ".reason"), login.getKickMessage());
+        final String reason = String.format(Main.messenger.getFormat("login." + login.getResult().name() + ".+reason"), login.getKickMessage());
         Main.messenger.broadcast("login." + login.getResult().name() + ".broadcast", Main.formatSender(login.getPlayer()), reason);
         login.setKickMessage(reason);
     }
@@ -62,10 +63,10 @@ final class Formatter implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerKick(final PlayerKickEvent kick) {
-        if (!this.quitAfterKick) this.hideNextQuit = true;
+        if (!this.plugin.getConfig().getBoolean("quitAfterKick")) this.hideNextQuit = true;
         if (kick.getReason() == null) return;
 
-        final String reason = String.format(Main.messenger.getFormat("kick.reason"), kick.getReason());
+        final String reason = String.format(Main.messenger.getFormat("kick.+reason"), kick.getReason());
         Main.messenger.broadcast("kick.broadcast", Main.formatSender(kick.getPlayer()), reason);
         kick.setReason(reason);
         kick.setLeaveMessage(null);

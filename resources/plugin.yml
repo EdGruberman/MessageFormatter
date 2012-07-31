@@ -39,6 +39,9 @@ commands:
         description: Send a private message to a player anonymously
         permission: messageformatter.send
         usage: /<command> <Player> <Message>
+    'messageformatter:reload':
+        description: Reload MessageFormatterplugin
+        permission: messageformatter.reload
 permissions:
     messageformatter.colors:
         description: Can use ampersand color codes in commands and chat
@@ -63,4 +66,7 @@ permissions:
         default: op
     messageformatter.send:
         description: Can use send command
+        default: op
+    messageformatter.reload:
+        description: Can use reload command
         default: op

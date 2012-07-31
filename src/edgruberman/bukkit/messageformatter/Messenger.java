@@ -1,7 +1,9 @@
 package edgruberman.bukkit.messageformatter;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.logging.Level;
 
@@ -10,8 +12,6 @@ import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.Plugin;
 
@@ -20,10 +20,10 @@ import edgruberman.bukkit.messagemanager.channels.Recipient;
 public class Messenger {
 
     public static Messenger load(final Plugin plugin) {
-        return Messenger.load(plugin, plugin.getConfig().getConfigurationSection("messages"));
+        return Messenger.load(plugin, null);
     }
 
-    public static Messenger load(final Plugin plugin, final ConfigurationSection formats) {
+    public static Messenger load(final Plugin plugin, final String formats) {
         if (Bukkit.getPluginManager().getPlugin("MessageManager") != null) {
             plugin.getLogger().config("Message timestamps will use MessageManager plugin for personalized player time zones");
             return new MessageManagerMessenger(plugin, formats);
@@ -34,12 +34,11 @@ public class Messenger {
         return messenger;
     }
 
-    public final ConfigurationSection formats;
-
     protected final Plugin plugin;
+    protected final String formats;
     protected final TimeZone zone = TimeZone.getDefault();
 
-    protected Messenger(final Plugin plugin, final ConfigurationSection formats) {
+    protected Messenger(final Plugin plugin, final String formats) {
         this.plugin = plugin;
         this.formats = formats;
     }
@@ -49,7 +48,20 @@ public class Messenger {
     }
 
     public String getFormat(final String path) {
-        return this.formats.getString(path);
+        return this.getFormats().getString(path);
+    }
+
+    public List<String> getFormatList(final String path) {
+        if (this.getFormats().isList(path))
+            return this.getFormats().getStringList(path);
+
+        return Arrays.asList(this.getFormats().getString(path));
+    }
+
+    public ConfigurationSection getFormats() {
+        if (this.formats == null) return this.plugin.getConfig().getRoot();
+
+        return this.plugin.getConfig().getConfigurationSection(this.formats);
     }
 
     /**
@@ -59,13 +71,15 @@ public class Messenger {
      * @param target where to send message
      * @param path standard message format path
      * @param args arguments to supply to message format
-     * @return formatted message
      */
-    public String tell(final CommandSender target, final String path, final Object... args) {
-        final String message = this.tellMessage(target, this.getFormat(path), args);
-        this.plugin.getLogger().log((target instanceof ConsoleCommandSender? Level.FINEST : Level.FINER)
-                , "#TELL@" + target.getName() + "# " + message);
-        return message;
+    public void tell(final CommandSender target, final String path, final Object... args) {
+        final Level level = (target instanceof ConsoleCommandSender? Level.FINEST : Level.FINER);
+        for (final String format : this.getFormatList(path)) {
+            if (format == null) continue;
+
+            final String message = this.tellMessage(target, format, args);
+            this.plugin.getLogger().log(level, "#TELL@" + target.getName() + "# " + message);
+        }
     }
 
     /**
@@ -83,12 +97,15 @@ public class Messenger {
         return this.send(target, format, new GregorianCalendar(), args);
     }
 
-    public int publish(final String permission, final String path, final Object... args) {
-        final String format = this.getFormat(path);
-        final int count = this.publishMessage(permission, format, args);
-        final String message = this.format(format, new GregorianCalendar(this.zone), args);
-        this.plugin.getLogger().finer("#PUBLISH@" + permission + "(" + count + ")# " + message);
-        return count;
+    public void publish(final String permission, final String path, final Object... args) {
+        final Calendar now = new GregorianCalendar(this.zone);
+        for (final String format : this.getFormatList(path)) {
+            if (format == null) continue;
+
+            final int count = this.publishMessage(permission, format, args);
+            final String message = this.format(format, now, args);
+            this.plugin.getLogger().finer("#PUBLISH@" + permission + "(" + count + ")# " + message);
+        }
     }
 
     /**
@@ -108,12 +125,15 @@ public class Messenger {
         return count;
     }
 
-    public int broadcast(final String path, final Object... args) {
-        final String format = this.getFormat(path);
-        final int count = this.broadcastMessage(format, args);
-        final String message = this.format(format, new GregorianCalendar(this.zone), args);
-        this.plugin.getLogger().finest("#BROADCAST(" + count + ")# " + message);
-        return count;
+    public void broadcast(final String path, final Object... args) {
+        final Calendar now = new GregorianCalendar(this.zone);
+        for (final String format : this.getFormatList(path)) {
+            if (format == null) continue;
+
+            final int count = this.broadcastMessage(format, args);
+            final String message = this.format(format, now, args);
+            this.plugin.getLogger().finest("#BROADCAST(" + count + ")# " + message);
+        }
     }
 
     /**
@@ -121,35 +141,6 @@ public class Messenger {
      */
     public int broadcastMessage(final String format, final Object... args) {
         return this.publishMessage(Server.BROADCAST_CHANNEL_USERS, format, args);
-    }
-
-    public int localize(final Entity origin, final int range, final String path, final Object... args) {
-        final String format = this.getFormat(path);
-        final int count = this.localizeMessage(origin, range, format, args);
-        final String message = this.format(format, new GregorianCalendar(this.zone), args);
-        this.plugin.getLogger().finer("#LOCALIZE(" + count + ")# " + message);
-
-        return count;
-    }
-
-    public int localizeMessage(final Entity origin, final int range, final String format, final Object... args) {
-        if (format == null) return -1;
-
-        final Calendar now = new GregorianCalendar();
-        int count = 0;
-
-        if (origin instanceof Player) {
-            this.send((Player) origin, format, now, args);
-            count++;
-        }
-
-        for (final Entity e : origin.getNearbyEntities(range, range, range))
-            if (e instanceof Player) {
-                this.send((Player) e, format, now, args);
-                count++;
-            }
-
-        return count;
     }
 
     public String format(final String format, final Calendar now, final Object... args) {
@@ -163,7 +154,7 @@ public class Messenger {
         return String.format(format, argsAll);
     }
 
-    protected String send(final CommandSender target, final String format, final Calendar now, final Object... args) {
+    public String send(final CommandSender target, final String format, final Calendar now, final Object... args) {
         now.setTimeZone(this.getZone(target));
         final String message = this.format(format, now, args);
         target.sendMessage(message);
@@ -172,7 +163,7 @@ public class Messenger {
 
     protected static class MessageManagerMessenger extends Messenger {
 
-        protected MessageManagerMessenger(final Plugin plugin, final ConfigurationSection formats) {
+        protected MessageManagerMessenger(final Plugin plugin, final String formats) {
             super(plugin, formats);
         }
 

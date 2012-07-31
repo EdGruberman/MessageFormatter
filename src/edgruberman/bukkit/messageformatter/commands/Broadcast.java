@@ -28,7 +28,7 @@ public final class Broadcast implements CommandExecutor {
         final String format = Main.formatColors(sender, args);
         final int count = Main.messenger.broadcastMessage(format);
         final String message = Main.messenger.format(format, new GregorianCalendar(Main.messenger.getZone(null)));
-        this.plugin.getLogger().finer("#BROADCAST(" + count + ")<" + sender.getName() + "# " + message);
+        this.plugin.getLogger().finest("#BROADCAST(" + count + ")# " + message);
         return true;
     }
 

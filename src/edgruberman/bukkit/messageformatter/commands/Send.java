@@ -1,9 +1,12 @@
 package edgruberman.bukkit.messageformatter.commands;
 
+import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -37,7 +40,8 @@ public final class Send implements CommandExecutor {
         }
 
         final String message = Main.messenger.tellMessage(target, Main.formatColors(sender, args));
-        this.plugin.getLogger().finer("#SEND@" + target.getName() + "# " + message);
+        final Level level = (target instanceof ConsoleCommandSender ? Level.FINEST : Level.FINER);
+        this.plugin.getLogger().log(level, "#TELL@" + target.getName() + "# " + message);
         return true;
     }
 

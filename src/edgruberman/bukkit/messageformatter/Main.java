@@ -1,12 +1,13 @@
 package edgruberman.bukkit.messageformatter;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Date;
@@ -24,6 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import edgruberman.bukkit.messageformatter.commands.Broadcast;
 import edgruberman.bukkit.messageformatter.commands.Local;
 import edgruberman.bukkit.messageformatter.commands.Me;
+import edgruberman.bukkit.messageformatter.commands.Reload;
 import edgruberman.bukkit.messageformatter.commands.Reply;
 import edgruberman.bukkit.messageformatter.commands.Say;
 import edgruberman.bukkit.messageformatter.commands.Send;
@@ -31,40 +33,45 @@ import edgruberman.bukkit.messageformatter.commands.Tell;
 
 public final class Main extends JavaPlugin {
 
-    private static final Version MINIMUM_CONFIGURATION = new Version("3.0.0a8");
+    private static final Version MINIMUM_CONFIGURATION = new Version("3.0.0");
 
     public static Messenger messenger;
 
     @Override
     public void onEnable() {
         this.reloadConfig();
-        Main.messenger = Messenger.load(this);
+        Main.messenger = Messenger.load(this, "messages");
 
-        Bukkit.getPluginManager().registerEvents(new Formatter(this.getConfig().getBoolean("quitAfterKick")), this);
+        Bukkit.getPluginManager().registerEvents(new Formatter(this), this);
 
         this.getCommand("messageformatter:say").setExecutor(new Say());
         this.getCommand("messageformatter:me").setExecutor(new Me());
-        this.getCommand("messageformatter:local").setExecutor(new Local(this.getConfig().getInt("localRange", 100)));
+        this.getCommand("messageformatter:local").setExecutor(new Local(this));
         final Reply reply = new Reply(this);
         this.getCommand("messageformatter:reply").setExecutor(reply);
         this.getCommand("messageformatter:tell").setExecutor(new Tell(reply));
         this.getCommand("messageformatter:broadcast").setExecutor(new Broadcast(this));
         this.getCommand("messageformatter:send").setExecutor(new Send(this));
+        this.getCommand("messageformatter:reload").setExecutor(new Reload(this));
     }
+
+    @Override
+    public void onDisable() {
+        Main.messenger = null;
+    }
+
     @Override
     public void reloadConfig() {
         this.saveDefaultConfig();
         super.reloadConfig();
+        this.setLogLevel(this.getConfig().getString("logLevel"));
 
         final Version version = new Version(this.getConfig().getString("version"));
-        if (version.compareTo(Main.MINIMUM_CONFIGURATION) >= 0) {
-            this.setLogLevel(this.getConfig().getString("logLevel"));
-            return;
-        }
+        if (version.compareTo(Main.MINIMUM_CONFIGURATION) >= 0) return;
 
         this.archiveConfig("config.yml", version);
         this.saveDefaultConfig();
-        super.reloadConfig();
+        this.reloadConfig();
     }
 
     @Override
@@ -94,11 +101,11 @@ public final class Main extends JavaPlugin {
         final File config = new File(this.getDataFolder(), resource);
         if (config.exists()) return;
 
-        final byte[] buffer = new byte[1024]; int read;
+        final char[] cbuf = new char[1024]; int read;
         try {
-            final InputStream in = new BufferedInputStream(this.getResource(resource));
-            final OutputStream out = new BufferedOutputStream(new FileOutputStream(config));
-            while((read = in.read(buffer)) > 0) out.write(target.encode(source.decode(ByteBuffer.wrap(buffer, 0, read))).array());
+            final Reader in = new BufferedReader(new InputStreamReader(this.getResource(resource), source));
+            final Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(config), target));
+            while((read = in.read(cbuf)) > 0) out.write(cbuf, 0, read);
             out.close(); in.close();
 
         } catch (final Exception e) {
@@ -125,13 +132,13 @@ public final class Main extends JavaPlugin {
         String formatted = null;
 
         if (sender instanceof ConsoleCommandSender)
-            formatted = String.format(Main.messenger.getFormat("names.console"), sender.getName());
+            formatted = String.format(Main.messenger.getFormat("names.+console"), sender.getName());
 
         if (sender instanceof Player)
-            formatted = String.format(Main.messenger.getFormat("names.player"), ((Player) sender).getDisplayName());
+            formatted = String.format(Main.messenger.getFormat("names.+player"), ((Player) sender).getDisplayName());
 
         if (formatted == null)
-            formatted = String.format(Main.messenger.getFormat("names.other"), sender.getName());
+            formatted = String.format(Main.messenger.getFormat("names.+other"), sender.getName());
 
         if (formatted != null) return formatted;
 

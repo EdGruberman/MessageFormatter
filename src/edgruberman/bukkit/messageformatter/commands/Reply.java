@@ -2,11 +2,13 @@ package edgruberman.bukkit.messageformatter.commands;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -59,25 +61,14 @@ public final class Reply implements CommandExecutor, Listener {
         final String senderFormatted = Main.formatSender(sender);
         final String recipientFormatted = Main.formatSender(recipient);
 
-        this.plugin.getLogger().finer("#TELL(" + sender.getName() + ">" + recipient.getName() + ")# " + message);
+        final Level level = (sender instanceof ConsoleCommandSender || recipient instanceof ConsoleCommandSender ? Level.FINEST : Level.FINER);
+        this.plugin.getLogger().log(level, "#TELL(" + sender.getName() + ">" + recipient.getName() + ")# " + message);
 
-        // Sender
-        Main.messenger.tellMessage(
-                sender
-                , Main.messenger.getFormat("tellSender")
-                , senderFormatted
-                , recipientFormatted
-                , message
-        );
+        for (final String format : Main.messenger.getFormatList("tell.sender"))
+            Main.messenger.tellMessage(sender, format, senderFormatted, recipientFormatted, message);
 
-        // Recipient
-        Main.messenger.tellMessage(
-                sender
-                , Main.messenger.getFormat("tellRecipient")
-                , senderFormatted
-                , recipientFormatted
-                , message
-        );
+        for (final String format : Main.messenger.getFormatList("tell.recipient"))
+            Main.messenger.tellMessage(recipient, format, senderFormatted, recipientFormatted, message);
 
         this.fromTo.put(sender, recipient);
         this.fromTo.put(recipient, sender);
