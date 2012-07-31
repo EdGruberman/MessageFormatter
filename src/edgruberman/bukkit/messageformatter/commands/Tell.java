@@ -1,5 +1,7 @@
 package edgruberman.bukkit.messageformatter.commands;
 
+import java.util.Arrays;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -35,7 +37,7 @@ public final class Tell implements CommandExecutor {
             return true;
         }
 
-        this.reply.send(recipient, sender, Main.formatColors(sender, args));
+        this.reply.send(recipient, sender, Main.formatColors(sender, Arrays.copyOfRange(args, 1, args.length)));
         return true;
     }
 

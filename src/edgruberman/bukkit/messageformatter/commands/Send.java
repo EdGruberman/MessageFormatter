@@ -1,5 +1,6 @@
 package edgruberman.bukkit.messageformatter.commands;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -39,7 +40,7 @@ public final class Send implements CommandExecutor {
             return true;
         }
 
-        final String message = Main.messenger.tellMessage(target, Main.formatColors(sender, args));
+        final String message = Main.messenger.tellMessage(target, Main.formatColors(sender, Arrays.copyOfRange(args, 1, args.length)));
         final Level level = (target instanceof ConsoleCommandSender ? Level.FINEST : Level.FINER);
         this.plugin.getLogger().log(level, "#TELL@" + target.getName() + "# " + message);
         return true;
