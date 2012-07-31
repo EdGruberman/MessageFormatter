@@ -48,7 +48,7 @@ final class Formatter implements Listener {
         Bukkit.getServer().getPluginManager().callEvent(custom);
         if (custom.isCancelled()) return;
 
-        Main.messenger.broadcast("chat", Main.formatSender(chat.getPlayer()), chat.getMessage());
+        Main.messenger.broadcast("chat", Main.formatSender(custom.getPlayer()), Main.formatColors(custom.getPlayer(), custom.getMessage()));
         chat.setCancelled(true);
         chat.setMessage(null);
     }
