@@ -64,7 +64,7 @@ final class Formatter implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerKick(final PlayerKickEvent kick) {
         if (!this.plugin.getConfig().getBoolean("quitAfterKick")) this.hideNextQuit = true;
-        if (kick.getReason() == null) return;
+        if (kick.getLeaveMessage() == null) return;
 
         final String reason = String.format(Main.messenger.getFormat("kick.+reason"), kick.getReason());
         Main.messenger.broadcast("kick.broadcast", Main.formatSender(kick.getPlayer()), reason);
