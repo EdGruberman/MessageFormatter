@@ -8,7 +8,7 @@ messages:
         +console: '§5§oConsole§r' # 1 = Console Name
     local: '§8%1$tH:%1$tM:%1$tS§r #§6Local§r# %2$s§r: %3$s' # 2 = Formatted Name, 3 = Message
     say: '§8%1$tH:%1$tM:%1$tS§r <%2$s> %3$s' # 2 = Formatted Name, 3 = Message
-    me: '§8%1$tH:%1$tM:%1$tS§r * %3$s %3s' # 2 = Formatted Name, 3 = Message
+    me: '§8%1$tH:%1$tM:%1$tS§r * %2$s %3$s' # 2 = Formatted Name, 3 = Message
     tell: # 2 = Formatted Sender Name, 3 = Formatted Recipient Name, 4 = Message
         recipient: '§8%1$tH:%1$tM:%1$tS§r %2$s §7§otells§r you] %4$s'
         sender: '§8%1$tH:%1$tM:%1$tS§r You §7§otell§r %3$s] %4$s'
