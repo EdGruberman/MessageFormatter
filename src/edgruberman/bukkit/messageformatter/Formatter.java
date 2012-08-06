@@ -42,7 +42,7 @@ final class Formatter implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerChat(final AsyncPlayerChatEvent chat) {
-        if (chat.getMessage() == null) return;
+        if (chat instanceof AsyncFormattedChat || chat.getMessage() == null) return;
 
         final AsyncFormattedChat custom = new AsyncFormattedChat(chat.isAsynchronous(), chat.getPlayer(), chat.getMessage(), chat.getRecipients());
         Bukkit.getServer().getPluginManager().callEvent(custom);
