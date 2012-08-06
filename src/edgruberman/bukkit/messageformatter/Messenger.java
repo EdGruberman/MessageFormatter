@@ -59,7 +59,7 @@ public class Messenger {
     }
 
     public ConfigurationSection getFormats() {
-        if (this.formats == null) return this.plugin.getConfig().getRoot();
+        if (this.formats == null) return this.plugin.getConfig();
 
         return this.plugin.getConfig().getConfigurationSection(this.formats);
     }

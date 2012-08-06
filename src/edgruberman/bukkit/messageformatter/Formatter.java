@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -41,10 +41,10 @@ final class Formatter implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onPlayerChat(final PlayerChatEvent chat) {
+    public void onPlayerChat(final AsyncPlayerChatEvent chat) {
         if (chat.getMessage() == null) return;
 
-        final PlayerChat custom = new PlayerChat(chat.getPlayer(), chat.getMessage());
+        final AsyncFormattedChat custom = new AsyncFormattedChat(chat.isAsynchronous(), chat.getPlayer(), chat.getMessage(), chat.getRecipients());
         Bukkit.getServer().getPluginManager().callEvent(custom);
         if (custom.isCancelled()) return;
 

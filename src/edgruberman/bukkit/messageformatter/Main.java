@@ -34,14 +34,18 @@ import edgruberman.bukkit.messageformatter.commands.Tell;
 
 public final class Main extends JavaPlugin {
 
-    private static final Version MINIMUM_CONFIGURATION = new Version("3.0.0");
+    private static final Version MINIMUM_CONFIGURATION = new Version("4.0.0a0");
 
     public static Messenger messenger;
+
+    private PermissionCache permissions;
 
     @Override
     public void onEnable() {
         this.reloadConfig();
         Main.messenger = Messenger.load(this, "messages");
+
+        this.permissions = new PermissionCache(this, this.getConfig().getLong("asyncPermissionCache") * 60 * 20, "messageformatter.colors");
 
         Bukkit.getPluginManager().registerEvents(new Formatter(this), this);
 
@@ -59,6 +63,8 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         HandlerList.unregisterAll(this);
+        this.permissions.cancel();
+        Bukkit.getScheduler().cancelTasks(this);
         Main.messenger = null;
     }
 
@@ -147,16 +153,19 @@ public final class Main extends JavaPlugin {
         return sender.getName();
     }
 
+    /** asynchronous cached permission */
     public static String formatColors(final CommandSender sender, final String message) {
         if (!message.startsWith("&")) return message;
-
-        if (!sender.hasPermission("messageformatter.colors")) return message;
 
         return ChatColor.translateAlternateColorCodes('&', message.substring(1));
     }
 
+    /** synchronous live permission */
     public static String formatColors(final CommandSender sender, final String[] args) {
-        return Main.formatColors(sender, Main.join(Arrays.asList(args), " "));
+        final String message = Main.join(Arrays.asList(args), " ");
+        if (!sender.hasPermission("messageformatter.colors")) return message;
+
+        return Main.formatColors(sender, message);
     }
 
     /**

@@ -1,6 +1,7 @@
 logLevel: INFO
-localRange: 100
+localRange: 100 # blocks
 quitAfterKick: false
+asyncPermissionCache: 300 # seconds
 messages:
     names:
         +player: '%1$s§r' # 1 = Player Display Name
