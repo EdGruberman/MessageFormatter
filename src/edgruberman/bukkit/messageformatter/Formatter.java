@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
-/** Formats messages according to the plugin's configuration */
+/** format displayed messages according to plugin configuration */
 final class Formatter implements Listener {
 
     private final Plugin plugin;
@@ -23,7 +23,7 @@ final class Formatter implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerLogin(final PlayerLoginEvent login) {
         if (login.getResult() == Result.ALLOWED) return;
 
@@ -32,7 +32,7 @@ final class Formatter implements Listener {
         login.setKickMessage(reason);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerJoin(final PlayerJoinEvent join) {
         if (join.getJoinMessage() == null) return;
 
@@ -40,20 +40,19 @@ final class Formatter implements Listener {
         join.setJoinMessage(null);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerChat(final AsyncPlayerChatEvent chat) {
-        if (chat instanceof AsyncFormattedChat || chat.getMessage() == null) return;
+        if (chat instanceof AsyncFormatChat) return;
 
-        final AsyncFormattedChat custom = new AsyncFormattedChat(chat.isAsynchronous(), chat.getPlayer(), chat.getMessage(), chat.getRecipients());
+        final AsyncFormatChat custom = new AsyncFormatChat(chat.isAsynchronous(), chat.getPlayer(), chat.getMessage(), chat.getRecipients());
         Bukkit.getServer().getPluginManager().callEvent(custom);
         if (custom.isCancelled()) return;
 
         Main.messenger.broadcast("chat", Main.formatSender(custom.getPlayer()), Main.formatColors(custom.getPlayer(), custom.getMessage()));
         chat.setCancelled(true);
-        chat.setMessage(null);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerDeath(final PlayerDeathEvent death) {
         if (death.getDeathMessage() == null) return;
 
@@ -61,7 +60,7 @@ final class Formatter implements Listener {
         death.setDeathMessage(null);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerKick(final PlayerKickEvent kick) {
         if (!this.plugin.getConfig().getBoolean("quitAfterKick")) this.hideNextQuit = true;
         if (kick.getLeaveMessage() == null) return;
@@ -74,14 +73,15 @@ final class Formatter implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerKickMonitor(final PlayerKickEvent kick) {
-        if (!kick.isCancelled() && kick.getLeaveMessage() != null) return;
+        // if kick occurred, leave next quit hidden as configured
+        if (!kick.isCancelled()) return;
 
-        // Do not cancel next quit message since kick message was never displayed
+        // kick did not occur, do not cancel next quit message
         this.hideNextQuit = false;
         return;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerQuit(final PlayerQuitEvent quit) {
         if (this.hideNextQuit) {
             quit.setQuitMessage(null);

@@ -34,7 +34,7 @@ import edgruberman.bukkit.messageformatter.commands.Tell;
 
 public final class Main extends JavaPlugin {
 
-    private static final Version MINIMUM_CONFIGURATION = new Version("4.0.0a0");
+    private static final Version MINIMUM_CONFIGURATION = new Version("4.0.0a10");
 
     public static Messenger messenger;
 
@@ -137,20 +137,13 @@ public final class Main extends JavaPlugin {
     }
 
     public static String formatSender(final CommandSender sender) {
-        String formatted = null;
+        if (sender instanceof Player)
+            return String.format(Main.messenger.getFormat("names.+player"), ((Player) sender).getDisplayName());
 
         if (sender instanceof ConsoleCommandSender)
-            formatted = String.format(Main.messenger.getFormat("names.+console"), sender.getName());
+            return String.format(Main.messenger.getFormat("names.+console"), sender.getName());
 
-        if (sender instanceof Player)
-            formatted = String.format(Main.messenger.getFormat("names.+player"), ((Player) sender).getDisplayName());
-
-        if (formatted == null)
-            formatted = String.format(Main.messenger.getFormat("names.+other"), sender.getName());
-
-        if (formatted != null) return formatted;
-
-        return sender.getName();
+        return String.format(Main.messenger.getFormat("names.+other"), sender.getName());
     }
 
     /** thread-safe translation, cached permission check */

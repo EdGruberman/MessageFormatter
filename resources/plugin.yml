@@ -1,6 +1,5 @@
 name: @NAME@
 description: Chat message formatting
-loadbefore: [PlayerActivity]
 softdepend: [MessageManager]
 version: @VERSION@
 author: @AUTHOR@
@@ -15,7 +14,7 @@ commands:
         permission: messageformatter.me
         usage: /<command> <Message>
     'messageformatter:tell':
-        aliases: [tell, t, whisper, w, private, pm]
+        aliases: [tell, t, '@', whisper, w]
         description: Send a private message to a player
         permission: messageformatter.tell
         usage: /<command> <Player> <Message>

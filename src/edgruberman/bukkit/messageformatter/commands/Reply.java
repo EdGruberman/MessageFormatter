@@ -62,14 +62,13 @@ public final class Reply implements CommandExecutor, Listener {
         final String senderFormatted = Main.formatSender(sender);
         final String recipientFormatted = Main.formatSender(recipient);
 
-        final Level level = (sender instanceof ConsoleCommandSender || recipient instanceof ConsoleCommandSender ? Level.FINEST : Level.FINER);
-        this.plugin.getLogger().log(level, "#TELL(" + sender.getName() + ">" + recipient.getName() + ")# " + message);
-
-        for (final String format : Main.messenger.getFormatList("tell.recipient"))
+        for (final String format : Main.messenger.getFormatList("tell")) {
             Main.messenger.tellMessage(recipient, format, senderFormatted, recipientFormatted, message);
-
-        for (final String format : Main.messenger.getFormatList("tell.sender"))
             Main.messenger.tellMessage(sender, format, senderFormatted, recipientFormatted, message);
+        }
+
+        final Level level = (sender instanceof ConsoleCommandSender || recipient instanceof ConsoleCommandSender ? Level.FINEST : Level.FINER);
+        this.plugin.getLogger().log(level, "#TELL@" + recipient.getName() + "# " + message);
 
         this.fromTo.put(sender, recipient);
         this.fromTo.put(recipient, sender);

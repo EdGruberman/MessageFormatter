@@ -34,8 +34,8 @@ public class PermissionCache implements Listener, Runnable {
 
     public PermissionCache(final Plugin plugin, final long period, final Collection<String> permissions) {
         this(plugin);
-        this.cache.keySet().addAll(permissions);
-        this.run(); // update cache for existing players
+        for (final String permission : permissions) this.put(permission);
+        this.updated = System.currentTimeMillis();
         this.schedule(period);
     }
 
