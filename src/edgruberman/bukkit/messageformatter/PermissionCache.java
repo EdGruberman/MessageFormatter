@@ -2,9 +2,7 @@ package edgruberman.bukkit.messageformatter;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -98,14 +96,13 @@ public class PermissionCache implements Listener, Runnable {
         this.updated = System.currentTimeMillis();
 
         for (final Map.Entry<String, ImmutableSet<String>> entry : this.cache.entrySet()) {
-            final Set<String> have = new HashSet<String>();
+            final ImmutableSet.Builder<String> have = ImmutableSet.<String>builder();
             for (final Player player : Bukkit.getOnlinePlayers()) {
                 if (player.hasPermission(entry.getKey()))
                     have.add(player.getName());
             }
-            entry.setValue(ImmutableSet.copyOf(have));
+            entry.setValue(have.build());
         }
-
 
     }
 
