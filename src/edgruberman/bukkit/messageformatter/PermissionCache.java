@@ -34,23 +34,13 @@ public class PermissionCache implements Listener, Runnable {
 
     public PermissionCache(final Plugin plugin, final long period, final Collection<String> permissions) {
         this(plugin);
-        for (final String permission : permissions) this.put(permission);
-        this.run(); // ensure cache is updated for any existing players at instantiation
-        this.setPeriod(period);
+        this.cache.keySet().addAll(permissions);
+        this.run(); // update cache for existing players
+        this.schedule(period);
     }
 
     public PermissionCache(final Plugin plugin, final long period, final String permission) {
         this(plugin, period, Arrays.asList(permission));
-    }
-
-    /**
-     * configure refresh period and start/update/cancel schedule
-     *
-     * @param period server ticks before refreshing cache
-     */
-    public void setPeriod(final long period) {
-        this.period = period;
-        this.schedule();
     }
 
     /** server ticks before refreshing cache */
@@ -58,17 +48,22 @@ public class PermissionCache implements Listener, Runnable {
         return this.period;
     }
 
-    /** the difference, measured in milliseconds, between the last refresh and midnight, January 1, 1970 UTC */
+    /** the difference, measured in milliseconds, between the oldest cache data and midnight, January 1, 1970 UTC */
     public long getUpdated() {
         return this.updated;
     }
 
-    /** start refreshing automatically; updates existing schedule */
-    public void schedule() {
+    /**
+     * start refreshing automatically; updates existing schedule
+     *
+     * @param period server ticks before refreshing cache
+     */
+    public void schedule(final long period) {
+        this.period = period;
         if (Bukkit.getServer().getOnlinePlayers().length == 0) return;
 
         if (this.taskId != -1) Bukkit.getScheduler().cancelTask(this.taskId);
-        this.taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(this.plugin, this, this.period, this.period);
+        this.taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(this.plugin, this, period, period);
     }
 
     /** stop cache from refreshing automatically */
@@ -80,12 +75,18 @@ public class PermissionCache implements Listener, Runnable {
         this.taskId = -1;
     }
 
-    /** add a permission to be tracked and update all cached permissions */
+    /** add a permission to the cache, immediately update  */
     public ImmutableSet<String> put(final String permission) {
-        return this.cache.put(permission, ImmutableSet.<String>of());
+        final ImmutableSet.Builder<String> have = ImmutableSet.<String>builder();
+
+        for (final Player player : Bukkit.getOnlinePlayers())
+            if (player.hasPermission(permission))
+                have.add(player.getName());
+
+        return this.cache.put(permission, have.build());
     }
 
-    /** remove a permission from being cached */
+    /** remove a permission from the cache */
     public ImmutableSet<String> remove(final String permission) {
         return this.cache.remove(permission);
     }
@@ -93,17 +94,8 @@ public class PermissionCache implements Listener, Runnable {
     /** update all cached permissions */
     @Override
     public void run() {
+        for (final String permission : this.cache.keySet()) this.put(permission);
         this.updated = System.currentTimeMillis();
-
-        for (final Map.Entry<String, ImmutableSet<String>> entry : this.cache.entrySet()) {
-            final ImmutableSet.Builder<String> have = ImmutableSet.<String>builder();
-            for (final Player player : Bukkit.getOnlinePlayers()) {
-                if (player.hasPermission(entry.getKey()))
-                    have.add(player.getName());
-            }
-            entry.setValue(have.build());
-        }
-
     }
 
     /**
@@ -118,9 +110,8 @@ public class PermissionCache implements Listener, Runnable {
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent join) {
         this.run();
-
         // restart automatic cache refreshing if configured and not running already
-        if (this.taskId == -1 && this.period > 0) this.schedule();
+        if (this.taskId == -1 && this.period > 0) this.schedule(this.period);
     }
 
     @EventHandler

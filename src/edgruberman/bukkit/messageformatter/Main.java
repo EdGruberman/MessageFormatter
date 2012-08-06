@@ -38,14 +38,14 @@ public final class Main extends JavaPlugin {
 
     public static Messenger messenger;
 
-    private PermissionCache permissions;
+    private static PermissionCache permissions;
 
     @Override
     public void onEnable() {
         this.reloadConfig();
         Main.messenger = Messenger.load(this, "messages");
 
-        this.permissions = new PermissionCache(this, this.getConfig().getLong("asyncPermissionCache") * 60 * 20, "messageformatter.colors");
+        Main.permissions = new PermissionCache(this, this.getConfig().getLong("asyncPermissionCache") * 60 * 20, "messageformatter.colors");
 
         Bukkit.getPluginManager().registerEvents(new Formatter(this), this);
 
@@ -63,7 +63,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         HandlerList.unregisterAll(this);
-        this.permissions.cancel();
+        Main.permissions.cancel();
         Bukkit.getScheduler().cancelTasks(this);
         Main.messenger = null;
     }
@@ -153,8 +153,10 @@ public final class Main extends JavaPlugin {
         return sender.getName();
     }
 
-    /** asynchronous cached permission */
+    /** thread-safe translation, cached permission check */
     public static String formatColors(final CommandSender sender, final String message) {
+        if ((sender instanceof Player) && !Main.permissions.hasPermission(sender.getName(), "messageformatter.colors")) return message;
+
         if (!message.startsWith("&")) return message;
 
         return ChatColor.translateAlternateColorCodes('&', message.substring(1));
