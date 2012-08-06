@@ -2,10 +2,10 @@ package edgruberman.bukkit.messageformatter;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -15,13 +15,15 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
+import com.google.common.collect.ImmutableSet;
+
 /** thread-safe hasPermission cache manager */
 public class PermissionCache implements Listener, Runnable {
 
     private final Plugin plugin;
 
     /** permission to players that have the permission set true */
-    private final Map<String, CopyOnWriteArraySet<String>> cache = new ConcurrentHashMap<String, CopyOnWriteArraySet<String>>();
+    private final Map<String, ImmutableSet<String>> cache = new ConcurrentHashMap<String, ImmutableSet<String>>();
 
     private long period = -1;
     private long updated = -1;
@@ -81,12 +83,12 @@ public class PermissionCache implements Listener, Runnable {
     }
 
     /** add a permission to be tracked and update all cached permissions */
-    public CopyOnWriteArraySet<String> put(final String permission) {
-        return this.cache.put(permission, new CopyOnWriteArraySet<String>());
+    public ImmutableSet<String> put(final String permission) {
+        return this.cache.put(permission, ImmutableSet.<String>of());
     }
 
     /** remove a permission from being cached */
-    public CopyOnWriteArraySet<String> remove(final String permission) {
+    public ImmutableSet<String> remove(final String permission) {
         return this.cache.remove(permission);
     }
 
@@ -95,12 +97,16 @@ public class PermissionCache implements Listener, Runnable {
     public void run() {
         this.updated = System.currentTimeMillis();
 
-        for (final Map.Entry<String, CopyOnWriteArraySet<String>> entry : this.cache.entrySet()) {
-            entry.getValue().clear();
-            for (final Player player : Bukkit.getOnlinePlayers())
+        for (final Map.Entry<String, ImmutableSet<String>> entry : this.cache.entrySet()) {
+            final Set<String> have = new HashSet<String>();
+            for (final Player player : Bukkit.getOnlinePlayers()) {
                 if (player.hasPermission(entry.getKey()))
-                    entry.getValue().add(player.getName());
+                    have.add(player.getName());
+            }
+            entry.setValue(ImmutableSet.copyOf(have));
         }
+
+
     }
 
     /**
@@ -114,9 +120,7 @@ public class PermissionCache implements Listener, Runnable {
 
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent join) {
-        for (final Map.Entry<String, CopyOnWriteArraySet<String>> entry : this.cache.entrySet())
-            if (join.getPlayer().hasPermission(entry.getKey()))
-                entry.getValue().add(join.getPlayer().getName());
+        this.run();
 
         // restart automatic cache refreshing if configured and not running already
         if (this.taskId == -1 && this.period > 0) this.schedule();
@@ -124,10 +128,6 @@ public class PermissionCache implements Listener, Runnable {
 
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent quit) {
-        final Iterator<CopyOnWriteArraySet<String>> it = this.cache.values().iterator();
-        while (it.hasNext())
-            it.next().remove(quit.getPlayer().getName());
-
         // pause cache refreshing when no players online
         if (Bukkit.getServer().getOnlinePlayers().length == 0)
             Bukkit.getScheduler().cancelTask(this.taskId);
