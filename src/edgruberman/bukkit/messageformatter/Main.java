@@ -38,16 +38,12 @@ public final class Main extends JavaPlugin {
 
     public static Messenger messenger;
 
-    private static PermissionCache permissions;
-
     @Override
     public void onEnable() {
         this.reloadConfig();
-        Main.messenger = Messenger.load(this, "messages");
+        Main.messenger = new Messenger(this, "messages");
 
-        Main.permissions = new PermissionCache(this, this.getConfig().getLong("asyncPermissionCache") * 60 * 20, "messageformatter.colors");
-
-        Bukkit.getPluginManager().registerEvents(new Formatter(this), this);
+        Bukkit.getPluginManager().registerEvents(new Formatter(this, this.getConfig().getLong("asyncPermissionCache") * 60 * 20), this);
 
         this.getCommand("messageformatter:say").setExecutor(new Say());
         this.getCommand("messageformatter:me").setExecutor(new Me());
@@ -63,7 +59,6 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         HandlerList.unregisterAll(this);
-        Main.permissions.cancel();
         Bukkit.getScheduler().cancelTasks(this);
         Main.messenger = null;
     }
@@ -136,6 +131,7 @@ public final class Main extends JavaPlugin {
         this.getLogger().config("Log level set to: " + this.getLogger().getLevel());
     }
 
+    // TODO ensure thread-safe config
     public static String formatSender(final CommandSender sender) {
         if (sender instanceof Player)
             return String.format(Main.messenger.getFormat("names.+player"), ((Player) sender).getDisplayName());
@@ -146,21 +142,11 @@ public final class Main extends JavaPlugin {
         return String.format(Main.messenger.getFormat("names.+other"), sender.getName());
     }
 
-    /** thread-safe translation, cached permission check */
-    public static String formatColors(final CommandSender sender, final String message) {
-        if ((sender instanceof Player) && !Main.permissions.hasPermission(sender.getName(), "messageformatter.colors")) return message;
-
-        if (!message.startsWith("&")) return message;
-
-        return ChatColor.translateAlternateColorCodes('&', message.substring(1));
-    }
-
-    /** synchronous live permission */
-    public static String formatColors(final CommandSender sender, final String[] args) {
+    public static String translateColors(final CommandSender sender, final String[] args) {
         final String message = Main.join(Arrays.asList(args), " ");
         if (!sender.hasPermission("messageformatter.colors")) return message;
 
-        return Main.formatColors(sender, message);
+        return ChatColor.translateAlternateColorCodes('&', message);
     }
 
     /**

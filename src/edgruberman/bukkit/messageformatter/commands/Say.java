@@ -16,7 +16,7 @@ public final class Say implements CommandExecutor {
             return false;
         }
 
-        Main.messenger.broadcast("say", Main.formatSender(sender), Main.formatColors(sender, args));
+        Main.messenger.broadcast("say", Main.formatSender(sender), Main.translateColors(sender, args));
         return true;
     }
 

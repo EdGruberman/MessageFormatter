@@ -40,7 +40,7 @@ public final class Send implements CommandExecutor {
             return true;
         }
 
-        final String message = Main.messenger.tellMessage(target, Main.formatColors(sender, Arrays.copyOfRange(args, 1, args.length)));
+        final String message = Main.messenger.tellMessage(target, Main.translateColors(sender, Arrays.copyOfRange(args, 1, args.length)));
         final Level level = (target instanceof ConsoleCommandSender ? Level.FINEST : Level.FINER);
         this.plugin.getLogger().log(level, "#TELL@" + target.getName() + "# " + message);
         return true;

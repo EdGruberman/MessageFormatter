@@ -54,7 +54,7 @@ public final class Reply implements CommandExecutor, Listener {
             return true;
         }
 
-        this.send(recipient, sender, Main.formatColors(sender, args));
+        this.send(recipient, sender, Main.translateColors(sender, args));
         return true;
     }
 

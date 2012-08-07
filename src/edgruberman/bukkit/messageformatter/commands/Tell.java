@@ -37,7 +37,7 @@ public final class Tell implements CommandExecutor {
             return true;
         }
 
-        this.reply.send(recipient, sender, Main.formatColors(sender, Arrays.copyOfRange(args, 1, args.length)));
+        this.reply.send(recipient, sender, Main.translateColors(sender, Arrays.copyOfRange(args, 1, args.length)));
         return true;
     }
 

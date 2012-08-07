@@ -1,7 +1,6 @@
 package edgruberman.bukkit.messageformatter.commands;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -36,12 +35,12 @@ public final class Local implements CommandExecutor {
         }
 
         final double rangeSquared = Math.pow(this.plugin.getConfig().getDouble("localRange", 100.0), 2);
-        this.localize((Player) sender, rangeSquared, "local", Main.formatSender(sender), Main.formatColors(sender, args));
+        this.localize((Player) sender, rangeSquared, "local", Main.formatSender(sender), Main.translateColors(sender, args));
         return true;
     }
 
     private void localize(final Entity sender, final double rangeSquared, final String path, final Object... args) {
-        final Calendar now = new GregorianCalendar(Main.messenger.getZone(null));
+        final Calendar now = Main.messenger.getNow(null);
         for (final String format : Main.messenger.getFormatList(path)) {
             final int count = this.localizeMessage(sender, rangeSquared, format, args);
             this.plugin.getLogger().finer("#LOCALIZE(" + count + ")# " + Main.messenger.format(format, now, args));
@@ -51,13 +50,14 @@ public final class Local implements CommandExecutor {
     private int localizeMessage(final Entity sender, final double rangeSquared, final String format, final Object... args) {
         if (format == null) return -1;
 
-        final Calendar now = new GregorianCalendar();
+        final Calendar now = Main.messenger.getNow(null);
         int count = 0;
 
         final Location origin = sender.getLocation();
         for (final Player player : Bukkit.getServer().getOnlinePlayers())
             if (origin.distanceSquared(player.getLocation()) <= rangeSquared) {
-                Main.messenger.send(player, format, now, args);
+                now.setTimeZone(Main.messenger.getTimeZone(player.getName()));
+                player.sendMessage(Main.messenger.format(format, now, args));
                 count++;
             }
 

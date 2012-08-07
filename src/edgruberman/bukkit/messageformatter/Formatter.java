@@ -1,6 +1,7 @@
 package edgruberman.bukkit.messageformatter;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -18,9 +19,11 @@ final class Formatter implements Listener {
 
     private final Plugin plugin;
     private boolean hideNextQuit = false;
+    private final PermissionCache permissions;
 
-    Formatter(final Plugin plugin) {
+    Formatter(final Plugin plugin, final long asyncPermissionCache) {
         this.plugin = plugin;
+        this.permissions = new PermissionCache(plugin, asyncPermissionCache, "messageformatter.colors");
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -48,7 +51,10 @@ final class Formatter implements Listener {
         Bukkit.getServer().getPluginManager().callEvent(custom);
         if (custom.isCancelled()) return;
 
-        Main.messenger.broadcast("chat", Main.formatSender(custom.getPlayer()), Main.formatColors(custom.getPlayer(), custom.getMessage()));
+        if (this.permissions.hasPermission(custom.getPlayer().getName(), "messageformatter.colors"))
+            custom.setMessage(ChatColor.translateAlternateColorCodes('&', custom.getMessage()));
+
+        Main.messenger.broadcast("chat", Main.formatSender(custom.getPlayer()), custom.getMessage());
         chat.setCancelled(true);
     }
 
