@@ -31,17 +31,19 @@ import edgruberman.bukkit.messageformatter.commands.Reply;
 import edgruberman.bukkit.messageformatter.commands.Say;
 import edgruberman.bukkit.messageformatter.commands.Send;
 import edgruberman.bukkit.messageformatter.commands.Tell;
+import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
+import edgruberman.bukkit.messaging.couriers.TimestampedConfigurationCourier;
 
 public final class Main extends JavaPlugin {
 
-    private static final Version MINIMUM_CONFIGURATION = new Version("4.0.0a10");
+    private static final Version MINIMUM_CONFIGURATION = new Version("5.0.0");
 
-    public static Messenger messenger;
+    public static ConfigurationCourier courier;
 
     @Override
     public void onEnable() {
         this.reloadConfig();
-        Main.messenger = new Messenger(this, "messages");
+        Main.courier = new TimestampedConfigurationCourier(this, "messages");
 
         Bukkit.getPluginManager().registerEvents(new Formatter(this, this.getConfig().getLong("asyncPermissionCache") * 60 * 20), this);
 
@@ -51,8 +53,8 @@ public final class Main extends JavaPlugin {
         final Reply reply = new Reply(this);
         this.getCommand("messageformatter:reply").setExecutor(reply);
         this.getCommand("messageformatter:tell").setExecutor(new Tell(reply));
-        this.getCommand("messageformatter:broadcast").setExecutor(new Broadcast(this));
-        this.getCommand("messageformatter:send").setExecutor(new Send(this));
+        this.getCommand("messageformatter:broadcast").setExecutor(new Broadcast());
+        this.getCommand("messageformatter:send").setExecutor(new Send());
         this.getCommand("messageformatter:reload").setExecutor(new Reload(this));
     }
 
@@ -60,7 +62,7 @@ public final class Main extends JavaPlugin {
     public void onDisable() {
         HandlerList.unregisterAll(this);
         Bukkit.getScheduler().cancelTasks(this);
-        Main.messenger = null;
+        Main.courier = null;
     }
 
     @Override
@@ -134,12 +136,12 @@ public final class Main extends JavaPlugin {
     // TODO ensure thread-safe config
     public static String formatSender(final CommandSender sender) {
         if (sender instanceof Player)
-            return String.format(Main.messenger.getFormat("names.+player"), ((Player) sender).getDisplayName());
+            return Main.courier.format("names.+player", ((Player) sender).getDisplayName());
 
         if (sender instanceof ConsoleCommandSender)
-            return String.format(Main.messenger.getFormat("names.+console"), sender.getName());
+            return Main.courier.format("names.+console", sender.getName());
 
-        return String.format(Main.messenger.getFormat("names.+other"), sender.getName());
+        return Main.courier.format("names.+other", sender.getName());
     }
 
     public static String translateColors(final CommandSender sender, final String[] args) {

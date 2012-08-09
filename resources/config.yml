@@ -10,7 +10,7 @@ messages:
     chat:  '§8%1$tH:%1$tM:%1$tS§r <%2$s> %3$s' # 2 = Formatted Sender Name, 3 = Message
     me:    '§8%1$tH:%1$tM:%1$tS§r * %2$s %3$s' # 2 = Formatted Sender Name, 3 = Message
     tell:  '§8%1$tH:%1$tM:%1$tS§r @§7§o%3$s <%2$s> %4$s' # 2 = Formatted Sender Name, 3 = Formatted Recipient Name, 4 = Message
-    local: '§8%1$tH:%1$tM:%1$tS§r #§6Local§r <%2$s>: %3$s' # 2 = Formatted Sender Name, 3 = Message
+    local: '§8%1$tH:%1$tM:%1$tS§r #§6Local§r <%2$s> %3$s' # 2 = Formatted Sender Name, 3 = Message
     say:   '§8%1$tH:%1$tM:%1$tS§r <%2$s> %3$s' # 2 = Formatted Sender Name, 3 = Message
     join:  '§8%1$tH:%1$tM:%1$tS§r %2$s §6joined§r the server' # 2 = Formatted Name
     quit:  '§8%1$tH:%1$tM:%1$tS§r %2$s §9left§r the server' # 2 = Formatted Name
@@ -31,6 +31,6 @@ messages:
     requiresParameter: '-> Required §cparameter missing§r: %2$s' # 2 = Parameter
     requiresPlayer: '-> Command cancelled when §cnot in-game player'
     playerNotFound: '-> Player §enot found§r: %2$s' # 2 = <Player>
-    replyNotAvailable: '-> No one to reply to'
+    replyNotAvailable: '-> §eNo one§r to reply to'
     reload: '-> MessageFormatter plugin §2reloaded'
 version: @VERSION@

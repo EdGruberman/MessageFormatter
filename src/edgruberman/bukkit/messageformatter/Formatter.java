@@ -30,8 +30,8 @@ final class Formatter implements Listener {
     public void onPlayerLogin(final PlayerLoginEvent login) {
         if (login.getResult() == Result.ALLOWED) return;
 
-        final String reason = String.format(Main.messenger.getFormat("login." + login.getResult().name() + ".+reason"), login.getKickMessage());
-        Main.messenger.broadcast("login." + login.getResult().name() + ".broadcast", Main.formatSender(login.getPlayer()), reason);
+        final String reason = Main.courier.format("login." + login.getResult().name() + ".+reason", login.getKickMessage());
+        Main.courier.broadcast("login." + login.getResult().name() + ".broadcast", Main.formatSender(login.getPlayer()), reason);
         login.setKickMessage(reason);
     }
 
@@ -39,7 +39,7 @@ final class Formatter implements Listener {
     public void onPlayerJoin(final PlayerJoinEvent join) {
         if (join.getJoinMessage() == null) return;
 
-        Main.messenger.broadcast("join", Main.formatSender(join.getPlayer()));
+        Main.courier.broadcast("join", Main.formatSender(join.getPlayer()));
         join.setJoinMessage(null);
     }
 
@@ -54,7 +54,7 @@ final class Formatter implements Listener {
         if (this.permissions.hasPermission(custom.getPlayer().getName(), "messageformatter.colors"))
             custom.setMessage(ChatColor.translateAlternateColorCodes('&', custom.getMessage()));
 
-        Main.messenger.broadcast("chat", Main.formatSender(custom.getPlayer()), custom.getMessage());
+        Main.courier.broadcast("chat", Main.formatSender(custom.getPlayer()), custom.getMessage());
         chat.setCancelled(true);
     }
 
@@ -62,7 +62,7 @@ final class Formatter implements Listener {
     public void onPlayerDeath(final PlayerDeathEvent death) {
         if (death.getDeathMessage() == null) return;
 
-        Main.messenger.broadcast("death", Main.formatSender(death.getEntity()), death.getDeathMessage());
+        Main.courier.broadcast("death", Main.formatSender(death.getEntity()), death.getDeathMessage());
         death.setDeathMessage(null);
     }
 
@@ -71,8 +71,8 @@ final class Formatter implements Listener {
         if (!this.plugin.getConfig().getBoolean("quitAfterKick")) this.hideNextQuit = true;
         if (kick.getLeaveMessage() == null) return;
 
-        final String reason = String.format(Main.messenger.getFormat("kick.+reason"), kick.getReason());
-        Main.messenger.broadcast("kick.broadcast", Main.formatSender(kick.getPlayer()), reason);
+        final String reason = Main.courier.format("kick.+reason", kick.getReason());
+        Main.courier.broadcast("kick.broadcast", Main.formatSender(kick.getPlayer()), reason);
         kick.setReason(reason);
         kick.setLeaveMessage(null);
     }
@@ -97,7 +97,7 @@ final class Formatter implements Listener {
 
         if (quit.getQuitMessage() == null) return;
 
-        Main.messenger.broadcast("quit", Main.formatSender(quit.getPlayer()));
+        Main.courier.broadcast("quit", Main.formatSender(quit.getPlayer()));
         quit.setQuitMessage(null);
     }
 

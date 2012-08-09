@@ -1,17 +1,17 @@
 package edgruberman.bukkit.messageformatter.commands;
 
-import java.util.Calendar;
+import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import edgruberman.bukkit.messageformatter.Main;
+import edgruberman.bukkit.messaging.Message;
+import edgruberman.bukkit.messaging.messages.TimestampedConfigurationMessage;
+import edgruberman.bukkit.messaging.recipients.LocalPlayers;
 
 public final class Local implements CommandExecutor {
 
@@ -25,43 +25,21 @@ public final class Local implements CommandExecutor {
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
         if (!(sender instanceof Player)) {
-            Main.messenger.tell(sender, "requiresPlayer");
+            Main.courier.send(sender, "requiresPlayer");
             return true;
         }
 
         if (args.length < 1) {
-            Main.messenger.tell(sender, "requiresParameter", "<Message>");
+            Main.courier.send(sender, "requiresParameter", "<Message>");
             return false;
         }
 
-        final double rangeSquared = Math.pow(this.plugin.getConfig().getDouble("localRange", 100.0), 2);
-        this.localize((Player) sender, rangeSquared, "local", Main.formatSender(sender), Main.translateColors(sender, args));
+        LocalPlayers.setRange(this.plugin.getConfig().getDouble("localRange", 100.0));
+        final List<? extends Message> messages = TimestampedConfigurationMessage.create(Main.courier.getBase(), "local", Main.formatSender(sender), Main.translateColors(sender, args));
+        for (final Message message : messages)
+            Main.courier.deliver(new LocalPlayers(((Player) sender).getLocation()), message);
+
         return true;
-    }
-
-    private void localize(final Entity sender, final double rangeSquared, final String path, final Object... args) {
-        final Calendar now = Main.messenger.getNow(null);
-        for (final String format : Main.messenger.getFormatList(path)) {
-            final int count = this.localizeMessage(sender, rangeSquared, format, args);
-            this.plugin.getLogger().finer("#LOCALIZE(" + count + ")# " + Main.messenger.format(format, now, args));
-        }
-    }
-
-    private int localizeMessage(final Entity sender, final double rangeSquared, final String format, final Object... args) {
-        if (format == null) return -1;
-
-        final Calendar now = Main.messenger.getNow(null);
-        int count = 0;
-
-        final Location origin = sender.getLocation();
-        for (final Player player : Bukkit.getServer().getOnlinePlayers())
-            if (origin.distanceSquared(player.getLocation()) <= rangeSquared) {
-                now.setTimeZone(Main.messenger.getTimeZone(player.getName()));
-                player.sendMessage(Main.messenger.format(format, now, args));
-                count++;
-            }
-
-        return count;
     }
 
 }

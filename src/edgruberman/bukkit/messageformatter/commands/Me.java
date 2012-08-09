@@ -12,11 +12,11 @@ public final class Me implements CommandExecutor {
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
         if (args.length < 1) {
-            Main.messenger.tell(sender, "requiresParameter", "<Message>");
+            Main.courier.send(sender, "requiresParameter", "<Message>");
             return false;
         }
 
-        Main.messenger.broadcast("me", Main.formatSender(sender), Main.translateColors(sender, args));
+        Main.courier.broadcast("me", Main.formatSender(sender), Main.translateColors(sender, args));
         return true;
     }
 

@@ -1,14 +1,13 @@
 package edgruberman.bukkit.messageformatter.commands;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,14 +16,15 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
 import edgruberman.bukkit.messageformatter.Main;
+import edgruberman.bukkit.messaging.Message;
+import edgruberman.bukkit.messaging.messages.TimestampedConfigurationMessage;
+import edgruberman.bukkit.messaging.recipients.Private;
 
 public final class Reply implements CommandExecutor, Listener {
 
-    private final Plugin plugin;
     private final Map<CommandSender, CommandSender> fromTo = new HashMap<CommandSender, CommandSender>();
 
     public Reply(final Plugin plugin) {
-        this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -32,13 +32,13 @@ public final class Reply implements CommandExecutor, Listener {
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
         if (args.length < 1) {
-            Main.messenger.tell(sender, "requiresParameter", "<Message>");
+            Main.courier.send(sender, "requiresParameter", "<Message>");
             return false;
         }
 
         CommandSender recipient = this.fromTo.get(sender);
         if (recipient == null) {
-            Main.messenger.tell(sender, "replyNotAvailable");
+            Main.courier.send(sender, "replyNotAvailable");
             return true;
         }
 
@@ -50,7 +50,7 @@ public final class Reply implements CommandExecutor, Listener {
         }
 
         if (recipient == null) {
-            Main.messenger.tell(sender, "playerNotFound", name);
+            Main.courier.send(sender, "playerNotFound", name);
             return true;
         }
 
@@ -62,13 +62,9 @@ public final class Reply implements CommandExecutor, Listener {
         final String senderFormatted = Main.formatSender(sender);
         final String recipientFormatted = Main.formatSender(recipient);
 
-        for (final String format : Main.messenger.getFormatList("tell")) {
-            Main.messenger.tellMessage(recipient, format, senderFormatted, recipientFormatted, message);
-            Main.messenger.tellMessage(sender, format, senderFormatted, recipientFormatted, message);
-        }
-
-        final Level level = (sender instanceof ConsoleCommandSender || recipient instanceof ConsoleCommandSender ? Level.FINEST : Level.FINER);
-        this.plugin.getLogger().log(level, "#TELL@" + recipient.getName() + "# " + message);
+        final List<? extends Message> messages = TimestampedConfigurationMessage.create(Main.courier.getBase(), "tell", senderFormatted, recipientFormatted, message);
+        for (final Message m : messages)
+            Main.courier.deliver(new Private(sender, recipient), m);
 
         this.fromTo.put(sender, recipient);
         this.fromTo.put(recipient, sender);
