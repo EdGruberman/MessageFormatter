@@ -9,9 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import edgruberman.bukkit.messageformatter.Main;
-import edgruberman.bukkit.messaging.Message;
-import edgruberman.bukkit.messaging.messages.TimestampedConfigurationMessage;
-import edgruberman.bukkit.messaging.recipients.LocalPlayers;
+import edgruberman.bukkit.messageformatter.messaging.Message;
+import edgruberman.bukkit.messageformatter.messaging.messages.TimestampedConfigurationMessage;
+import edgruberman.bukkit.messageformatter.messaging.recipients.LocalPlayers;
 
 public final class Local implements CommandExecutor {
 

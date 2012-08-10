@@ -31,8 +31,9 @@ import edgruberman.bukkit.messageformatter.commands.Reply;
 import edgruberman.bukkit.messageformatter.commands.Say;
 import edgruberman.bukkit.messageformatter.commands.Send;
 import edgruberman.bukkit.messageformatter.commands.Tell;
-import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
-import edgruberman.bukkit.messaging.couriers.TimestampedConfigurationCourier;
+import edgruberman.bukkit.messageformatter.messaging.couriers.ConfigurationCourier;
+import edgruberman.bukkit.messageformatter.messaging.couriers.TimestampedConfigurationCourier;
+
 
 public final class Main extends JavaPlugin {
 

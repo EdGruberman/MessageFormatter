@@ -9,8 +9,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import edgruberman.bukkit.messageformatter.Main;
-import edgruberman.bukkit.messaging.messages.TimestampedMessage;
-import edgruberman.bukkit.messaging.recipients.Sender;
+import edgruberman.bukkit.messageformatter.messaging.messages.TimestampedMessage;
+import edgruberman.bukkit.messageformatter.messaging.recipients.Sender;
 
 public final class Send implements CommandExecutor {
 

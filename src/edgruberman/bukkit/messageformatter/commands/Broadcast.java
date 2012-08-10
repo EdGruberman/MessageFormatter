@@ -5,8 +5,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import edgruberman.bukkit.messageformatter.Main;
-import edgruberman.bukkit.messaging.messages.TimestampedMessage;
-import edgruberman.bukkit.messaging.recipients.ServerPlayers;
+import edgruberman.bukkit.messageformatter.messaging.messages.TimestampedMessage;
+import edgruberman.bukkit.messageformatter.messaging.recipients.ServerPlayers;
 
 public final class Broadcast implements CommandExecutor {
 

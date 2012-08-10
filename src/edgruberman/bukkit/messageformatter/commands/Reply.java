@@ -16,9 +16,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
 import edgruberman.bukkit.messageformatter.Main;
-import edgruberman.bukkit.messaging.Message;
-import edgruberman.bukkit.messaging.messages.TimestampedConfigurationMessage;
-import edgruberman.bukkit.messaging.recipients.Private;
+import edgruberman.bukkit.messageformatter.messaging.Message;
+import edgruberman.bukkit.messageformatter.messaging.messages.TimestampedConfigurationMessage;
+import edgruberman.bukkit.messageformatter.messaging.recipients.Private;
 
 public final class Reply implements CommandExecutor, Listener {
 

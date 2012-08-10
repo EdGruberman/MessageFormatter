@@ -1,4 +1,4 @@
-package edgruberman.bukkit.messaging.recipients;
+package edgruberman.bukkit.messageformatter.messaging.recipients;
 
 import java.util.logging.Level;
 
@@ -6,9 +6,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import edgruberman.bukkit.messaging.Message;
-import edgruberman.bukkit.messaging.Recipients;
-import edgruberman.bukkit.messaging.messages.Confirmation;
+import edgruberman.bukkit.messageformatter.messaging.Message;
+import edgruberman.bukkit.messageformatter.messaging.Recipients;
+import edgruberman.bukkit.messageformatter.messaging.messages.Confirmation;
 
 public class LocalPlayers implements Recipients {
 
