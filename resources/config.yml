@@ -32,5 +32,5 @@ messages:
     requiresPlayer: '-> Command cancelled when §cnot in-game player'
     playerNotFound: '-> Player §enot found§r: %2$s' # 2 = <Player>
     replyNotAvailable: '-> §eNo one§r to reply to'
-    reload: '-> MessageFormatter plugin §2reloaded'
+    reload: '-> %2$s plugin §2reloaded' # 2 = Plugin Name
 version: @VERSION@
