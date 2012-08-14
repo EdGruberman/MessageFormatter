@@ -18,12 +18,12 @@ public final class Send implements CommandExecutor {
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
         if (args.length < 2) {
-            Main.courier.send(sender, "requiresParameter", "<Message>");
+            Main.courier.send(sender, "requiresArgument", "<Message>");
             return false;
         }
 
         if (args.length < 1) {
-            Main.courier.send(sender, "requiresParameter", "<Player>");
+            Main.courier.send(sender, "requiresArgument", "<Player>");
             return false;
         }
 
@@ -34,7 +34,7 @@ public final class Send implements CommandExecutor {
         }
 
         final String format = Main.translateColors(sender, Arrays.copyOfRange(args, 1, args.length));
-        Main.courier.deliver(new Sender(target), new TimestampedMessage(format));
+        Main.courier.submit(new Sender(target), new TimestampedMessage(format));
          return true;
     }
 

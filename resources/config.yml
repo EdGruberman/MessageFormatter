@@ -4,33 +4,33 @@ quitAfterKick: false
 asyncPermissionCache: 300 # seconds
 messages:
     names:
-        +player: '%1$s§r' # 1 = Player Display Name
-        +other: '(%1$s§r)' # 1 = Sender Name
-        +console: '§5§oConsole§r' # 1 = Console Name
-    chat:  '§8%1$tH:%1$tM:%1$tS§r <%2$s> %3$s' # 2 = Formatted Sender Name, 3 = Message
-    me:    '§8%1$tH:%1$tM:%1$tS§r * %2$s %3$s' # 2 = Formatted Sender Name, 3 = Message
-    tell:  '§8%1$tH:%1$tM:%1$tS§r @§7§o%3$s <%2$s> %4$s' # 2 = Formatted Sender Name, 3 = Formatted Recipient Name, 4 = Message
-    local: '§8%1$tH:%1$tM:%1$tS§r #§6Local§r <%2$s> %3$s' # 2 = Formatted Sender Name, 3 = Message
-    say:   '§8%1$tH:%1$tM:%1$tS§r <%2$s> %3$s' # 2 = Formatted Sender Name, 3 = Message
-    join:  '§8%1$tH:%1$tM:%1$tS§r %2$s §6joined§r the server' # 2 = Formatted Name
-    quit:  '§8%1$tH:%1$tM:%1$tS§r %2$s §9left§r the server' # 2 = Formatted Name
-    death: '§8%1$tH:%1$tM:%1$tS %3$s' # 2 = Formatted Name, 3 = Death Message
-    kick: # 2 = Formatted Name, 3 = Formatted Reason
-        broadcast: '§8%1$tH:%1$tM:%1$tS§r %2$s was §ckicked§r (%3$s)'
-        +reason: '§o%1$s§r' # 1 = Reason
-    login: # 2 = Formatted Name, 3 = Formatted Reason
+        +player: '{0}§r' # 0 = Player Display Name
+        +other: '({0}§r)' # 0 = Sender Name
+        +console: '§5§oConsole§r' # 0 = Console Name
+    chat:  '§8{0,time,HH:mm:ss}§r <{1}> {2}' # 1 = Formatted Sender Name, 2 = Message
+    me:    '§8{0,time,HH:mm:ss}§r * {1} {2}' # 1 = Formatted Sender Name, 2 = Message
+    tell:  '§8{0,time,HH:mm:ss}§r @§7§o{2} <{1}> {3}' # 1 = Formatted Sender Name, 2 = Formatted Recipient Name, 3 = Message
+    local: '§8{0,time,HH:mm:ss}§r #§6Local§r <{1}> {2}' # 1 = Formatted Sender Name, 2 = Message
+    say:   '§8{0,time,HH:mm:ss}§r <{1}> {2}' # 1 = Formatted Sender Name, 2 = Message
+    join:  '§8{0,time,HH:mm:ss}§r {1} §6joined§r the server' # 1 = Formatted Name
+    quit:  '§8{0,time,HH:mm:ss}§r {1} §9left§r the server' # 1 = Formatted Name
+    death: '§8{0,time,HH:mm:ss} {2}' # 1 = Formatted Name, 2 = Death Message
+    kick: # 1 = Formatted Name, 2 = Formatted Reason
+        broadcast: '§8{0,time,HH:mm:ss}§r {1} was §ckicked§r ({2})'
+        +reason: '§o{0}§r' # 1 = Reason
+    login: # 1 = Formatted Name, 2 = Formatted Reason
         KICK_BANNED:
-            +reason: '§o%1$s§r' # 1 = Reason
+            +reason: '§o{0}s§r' # 0 = Reason
         KICK_FULL:
-            +reason: '§o%1$s§r' # 1 = Reason
+            +reason: '§o{0}§r' # 0 = Reason
         KICK_WHITELIST:
-            broadcast: '§8%1$tH:%1$tM:%1$tS§r §e§oDisconnected §r%2$s §e§odue to whitelist'
-            +reason: '§o%1$s§r' # 1 = Reason
+            broadcast: '§8{0,time,HH:mm:ss}§r §e§oDisconnected §r{1} §e§odue to whitelist'
+            +reason: '§o{0}§r' # 0 = Reason
         KICK_OTHER:
-            +reason: '§o%1$s§r' # 1 = Reason
-    requiresParameter: '-> Required §cparameter missing§r: %2$s' # 2 = Parameter
-    requiresPlayer: '-> Command cancelled when §cnot in-game player'
-    playerNotFound: '-> Player §enot found§r: %2$s' # 2 = <Player>
+            +reason: '§o{0}§r' # 0 = Reason
+    requiresArgument: '-> Required §cargument missing§r: {1}' # 1 = Argument Name
+    requiresPlayer: '-> §cOnly in-game players§r can use the {1} command' # 1 = Command Label
+    playerNotFound: '-> Player §enot found§r: {1}' # 1 = <Player>
     replyNotAvailable: '-> §eNo one§r to reply to'
-    reload: '-> %2$s plugin §2reloaded' # 2 = Plugin Name
+    reload: '-> {1} plugin §2reloaded' # 1 = Plugin
 version: @VERSION@

@@ -32,7 +32,7 @@ public final class Reply implements CommandExecutor, Listener {
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
         if (args.length < 1) {
-            Main.courier.send(sender, "requiresParameter", "<Message>");
+            Main.courier.send(sender, "requiresArgument", "<Message>");
             return false;
         }
 
@@ -64,7 +64,7 @@ public final class Reply implements CommandExecutor, Listener {
 
         final List<? extends Message> messages = TimestampedConfigurationMessage.create(Main.courier.getBase(), "tell", senderFormatted, recipientFormatted, message);
         for (final Message m : messages)
-            Main.courier.deliver(new Private(sender, recipient), m);
+            Main.courier.submit(new Private(sender, recipient), m);
 
         this.fromTo.put(sender, recipient);
         this.fromTo.put(recipient, sender);

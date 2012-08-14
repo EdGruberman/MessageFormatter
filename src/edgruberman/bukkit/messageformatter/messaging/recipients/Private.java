@@ -20,24 +20,14 @@ public class Private implements Recipients {
     }
 
     @Override
-    public Confirmation send(final Message message) {
-        this.sender.sendMessage(message.formatFor(this.sender));
-        this.recipient.sendMessage(message.formatFor(this.recipient));
-        return new PrivateConfirmation(message.toString());
+    public Confirmation deliver(final Message message) {
+        this.sender.sendMessage(message.format(this.sender).toString());
+        this.recipient.sendMessage(message.format(this.recipient).toString());
+        return new Confirmation(this.getLevel(), 2, "[TELL|{2}@{1}] {0}", message, this.recipient.getName(), this.sender.getName());
     }
 
     private Level getLevel() {
         return (this.sender instanceof Player && this.recipient instanceof Player ? Level.FINER : Level.FINEST);
-    }
-
-
-
-    public class PrivateConfirmation extends Confirmation {
-
-        public PrivateConfirmation(final String message) {
-            super(Private.this.getLevel(), 2, "[TELL@%2$s] %1$s", message, Private.this.recipient.getName());
-        }
-
     }
 
 }

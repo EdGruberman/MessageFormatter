@@ -1,6 +1,5 @@
 name: @NAME@
 description: Chat message formatting
-softdepend: [TimeService]
 version: @VERSION@
 author: @AUTHOR@
 main: @MAIN@

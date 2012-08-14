@@ -37,7 +37,7 @@ import edgruberman.bukkit.messageformatter.messaging.couriers.TimestampedConfigu
 
 public final class Main extends JavaPlugin {
 
-    private static final Version MINIMUM_CONFIGURATION = new Version("5.0.0");
+    private static final Version MINIMUM_CONFIGURATION = new Version("5.1.0");
 
     public static ConfigurationCourier courier;
 

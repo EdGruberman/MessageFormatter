@@ -29,26 +29,15 @@ public class LocalPlayers implements Recipients {
     }
 
     @Override
-    public Confirmation send(final Message message) {
+    public Confirmation deliver(final Message message) {
         int count = 0;
         for (final Player player : Bukkit.getServer().getOnlinePlayers())
             if (this.origin.distanceSquared(player.getLocation()) <= LocalPlayers.rangeSquared) {
-                player.sendMessage(message.formatFor(player));
+                player.sendMessage(message.format(player).toString());
                 count++;
             }
 
-        return new LocalConfirmation(message.toString(), count);
-    }
-
-
-
-    public class LocalConfirmation extends Confirmation {
-
-        public LocalConfirmation(final String message, final int count) {
-            super(Level.FINER, count, "[LOCAL:%4$d:%2$s(%3$d)] %1$s", message, LocalPlayers.this.origin, count, LocalPlayers.range);
-
-        }
-
+        return new Confirmation(Level.FINER, count, "[LOCAL:{2}:[{3}]x={4},y={5},z={6}({1})] {0}", message, count, LocalPlayers.range, this.origin.getWorld().getName(), this.origin.getBlockX(), this.origin.getBlockY(), this.origin.getBlockZ());
     }
 
 }

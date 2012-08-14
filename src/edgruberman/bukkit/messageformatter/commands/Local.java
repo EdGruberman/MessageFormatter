@@ -25,19 +25,19 @@ public final class Local implements CommandExecutor {
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
         if (!(sender instanceof Player)) {
-            Main.courier.send(sender, "requiresPlayer");
+            Main.courier.send(sender, "requiresPlayer", label);
             return true;
         }
 
         if (args.length < 1) {
-            Main.courier.send(sender, "requiresParameter", "<Message>");
+            Main.courier.send(sender, "requiresArgument", "<Message>");
             return false;
         }
 
         LocalPlayers.setRange(this.plugin.getConfig().getDouble("localRange", 100.0));
         final List<? extends Message> messages = TimestampedConfigurationMessage.create(Main.courier.getBase(), "local", Main.formatSender(sender), Main.translateColors(sender, args));
         for (final Message message : messages)
-            Main.courier.deliver(new LocalPlayers(((Player) sender).getLocation()), message);
+            Main.courier.submit(new LocalPlayers(((Player) sender).getLocation()), message);
 
         return true;
     }
