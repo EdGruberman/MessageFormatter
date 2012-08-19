@@ -43,7 +43,7 @@ final class Formatter implements Listener {
         join.setJoinMessage(null);
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true) // LOW to avoid plugins duplicating the processing of AsyncPlayerChatEvent
     public void onPlayerChat(final AsyncPlayerChatEvent chat) {
         if (chat instanceof AsyncFormatChat) return;
 

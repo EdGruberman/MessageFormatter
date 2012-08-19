@@ -32,5 +32,6 @@ messages:
     requiresPlayer: '-> §cOnly in-game players§r can use the {1} command' # 1 = Command Label
     playerNotFound: '-> Player §enot found§r: {1}' # 1 = <Player>
     replyNotAvailable: '-> §eNo one§r to reply to'
+    nick: '-> §2Set display name§r for {1} to {2}' # 1 = Player Name, 2 = Player Display Name
     reload: '-> {1} plugin §2reloaded' # 1 = Plugin
 version: @VERSION@

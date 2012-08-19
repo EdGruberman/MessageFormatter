@@ -17,8 +17,7 @@ import org.bukkit.plugin.Plugin;
 
 import edgruberman.bukkit.messageformatter.Main;
 import edgruberman.bukkit.messageformatter.messaging.Message;
-import edgruberman.bukkit.messageformatter.messaging.messages.TimestampedConfigurationMessage;
-import edgruberman.bukkit.messageformatter.messaging.recipients.Private;
+import edgruberman.bukkit.messageformatter.messaging.Private;
 
 public final class Reply implements CommandExecutor, Listener {
 
@@ -61,10 +60,8 @@ public final class Reply implements CommandExecutor, Listener {
     void send(final CommandSender recipient, final CommandSender sender, final String message) {
         final String senderFormatted = Main.formatSender(sender);
         final String recipientFormatted = Main.formatSender(recipient);
-
-        final List<? extends Message> messages = TimestampedConfigurationMessage.create(Main.courier.getBase(), "tell", senderFormatted, recipientFormatted, message);
-        for (final Message m : messages)
-            Main.courier.submit(new Private(sender, recipient), m);
+        final List<Message> messages = Main.courier.draft("tell", senderFormatted, recipientFormatted, message);
+        Main.courier.submit(new Private(sender, recipient), messages);
 
         this.fromTo.put(sender, recipient);
         this.fromTo.put(recipient, sender);

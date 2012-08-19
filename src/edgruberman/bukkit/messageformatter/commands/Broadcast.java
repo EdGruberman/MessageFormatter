@@ -5,8 +5,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import edgruberman.bukkit.messageformatter.Main;
-import edgruberman.bukkit.messageformatter.messaging.messages.TimestampedMessage;
-import edgruberman.bukkit.messageformatter.messaging.recipients.ServerPlayers;
+import edgruberman.bukkit.messageformatter.messaging.Message;
+import edgruberman.bukkit.messageformatter.messaging.ServerPlayers;
 
 public final class Broadcast implements CommandExecutor {
 
@@ -19,7 +19,7 @@ public final class Broadcast implements CommandExecutor {
         }
 
         final String format = Main.translateColors(sender, args);
-        Main.courier.submit(new ServerPlayers(), new TimestampedMessage(format));
+        Main.courier.submit(new ServerPlayers(), Message.Factory.create(format).timestamp().build());
         return true;
     }
 

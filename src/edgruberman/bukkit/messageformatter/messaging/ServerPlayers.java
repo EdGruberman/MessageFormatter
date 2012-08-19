@@ -1,17 +1,14 @@
-package edgruberman.bukkit.messageformatter.messaging.recipients;
+package edgruberman.bukkit.messageformatter.messaging;
 
 import java.util.logging.Level;
 
 import org.bukkit.Server;
 
-import edgruberman.bukkit.messageformatter.messaging.Message;
-import edgruberman.bukkit.messageformatter.messaging.messages.Confirmation;
-
 /**
  * all players in server at message delivery time
  *
  * @author EdGruberman (ed@rjump.com)
- * @version 1.0.0
+ * @version 2.0.0
  */
 public class ServerPlayers extends PermissionSubscribers {
 
@@ -22,8 +19,7 @@ public class ServerPlayers extends PermissionSubscribers {
     @Override
     public Confirmation deliver(final Message message) {
         final Confirmation confirmation = super.deliver(message);
-        return new Confirmation(Level.FINEST, confirmation.getReceived()
-                , "[BROADCAST({1})] {0}", message, confirmation.getReceived());
+        return new Confirmation(Level.FINEST, confirmation.getReceived(), "[BROADCAST({1})] {0}", message, confirmation.getReceived());
     }
 
 }

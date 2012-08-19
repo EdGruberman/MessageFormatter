@@ -37,34 +37,61 @@ commands:
         description: Send a private message to a player anonymously
         permission: messageformatter.send
         usage: /<command> <Player> <Message>
+    'messageformatter:nick':
+        aliases: [nick]
+        description: Change player display name
+        permission: messageformatter.nick
+        usage: /<command> <Player>[ <Display>]
     'messageformatter:reload':
         description: Reload MessageFormatterplugin
         permission: messageformatter.reload
 permissions:
+    messageformatter.user:
+        description: Can use basic features of MessageFormatter plugin
+        default: true
+        children:
+            messageformatter.say: true
+            messageformatter.me: true
+            messageformatter.tell: true
+            messageformatter.reply: true
+            messageformatter.local: true
+    messageformatter.admin:
+        description: Can use administrative features of MessageFormatter plugin
+        default: op
+        children:
+            messageformatter.user: true
+            messageformatter.colors: true
+            messageformatter.broadcast: true
+            messageformatter.send: true
+            messageformatter.nick: true
+            messageformatter.reload: true
     messageformatter.colors:
         description: Can use ampersand color codes in commands and chat
-        default: op
+        default: false
     messageformatter.say:
-        description: Can use say command
-        default: true
+        description: Can use messageformatter:say command
+        default: false
     messageformatter.me:
-        description: Can use me command
-        default: true
+        description: Can use messageformatter:me command
+        default: false
     messageformatter.tell:
-        description: Can use tell command
-        default: true
+        description: Can use messageformatter:tell command
+        default: false
     messageformatter.reply:
-        description: Can use reply command
-        default: true
+        description: Can use messageformatter:reply command
+        default: false
     messageformatter.local:
-        description: Can use local command
-        default: true
+        description: Can use messageformatter:local command
+        default: false
     messageformatter.broadcast:
-        description: Can use broadcast command
-        default: op
+        description: Can use messageformatter:broadcast command
+        default: false
     messageformatter.send:
-        description: Can use send command
-        default: op
+        description: Can use messageformatter:send command
+        default: false
+    messageformatter.nick:
+        description: Can use messageformatter:nick command
+        default: false
     messageformatter.reload:
-        description: Can use reload command
-        default: op
+        description: Can use messageformatter:reload command
+        default: false

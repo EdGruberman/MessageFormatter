@@ -1,15 +1,11 @@
-package edgruberman.bukkit.messageformatter.messaging.recipients;
+package edgruberman.bukkit.messageformatter.messaging;
 
 import java.util.logging.Level;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import edgruberman.bukkit.messageformatter.messaging.Message;
-import edgruberman.bukkit.messageformatter.messaging.Recipients;
-import edgruberman.bukkit.messageformatter.messaging.messages.Confirmation;
-
-public class Private implements Recipients {
+public class Private extends Recipients {
 
     protected CommandSender sender;
     protected CommandSender recipient;
@@ -23,10 +19,10 @@ public class Private implements Recipients {
     public Confirmation deliver(final Message message) {
         this.sender.sendMessage(message.format(this.sender).toString());
         this.recipient.sendMessage(message.format(this.recipient).toString());
-        return new Confirmation(this.getLevel(), 2, "[TELL|{2}@{1}] {0}", message, this.recipient.getName(), this.sender.getName());
+        return new Confirmation(this.level(), 2, "[TELL|{2}@{1}] {0}", message, this.recipient.getName(), this.sender.getName());
     }
 
-    private Level getLevel() {
+    private Level level() {
         return (this.sender instanceof Player && this.recipient instanceof Player ? Level.FINER : Level.FINEST);
     }
 
