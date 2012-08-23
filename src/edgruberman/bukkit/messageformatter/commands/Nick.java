@@ -17,8 +17,8 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.messageformatter.BufferedYamlConfiguration;
 import edgruberman.bukkit.messageformatter.Main;
+import edgruberman.bukkit.messageformatter.util.BufferedYamlConfiguration;
 
 public final class Nick implements CommandExecutor, Listener {
 

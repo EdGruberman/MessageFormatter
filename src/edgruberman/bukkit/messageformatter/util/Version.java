@@ -1,5 +1,4 @@
-package edgruberman.bukkit.messageformatter;
-
+package edgruberman.bukkit.messageformatter.util;
 
 import java.util.ArrayList;
 import java.util.Collection;

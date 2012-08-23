@@ -1,4 +1,4 @@
-package edgruberman.bukkit.messageformatter;
+package edgruberman.bukkit.messageformatter.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;

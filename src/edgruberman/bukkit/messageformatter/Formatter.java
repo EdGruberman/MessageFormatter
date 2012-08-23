@@ -14,6 +14,8 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
+import edgruberman.bukkit.messageformatter.util.PermissionCache;
+
 /** format displayed messages according to plugin configuration */
 final class Formatter implements Listener {
 
