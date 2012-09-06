@@ -37,7 +37,7 @@ final class Formatter implements Listener {
         login.setKickMessage(reason);
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGHEST) // process as late as possible
     public void onPlayerJoin(final PlayerJoinEvent join) {
         if (join.getJoinMessage() == null) return;
 
