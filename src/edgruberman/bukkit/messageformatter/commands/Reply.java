@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -59,7 +60,7 @@ public final class Reply implements CommandExecutor, Listener {
 
     void send(final CommandSender recipient, final CommandSender sender, final String message) {
         final String senderFormatted = Main.formatSender(sender);
-        final String recipientFormatted = Main.formatSender(recipient);
+        final String recipientFormatted = ChatColor.stripColor(Main.formatSender(recipient));
         final List<Message> messages = Main.courier.draft("tell", senderFormatted, recipientFormatted, message);
         Main.courier.submit(new Private(sender, recipient), messages);
 

@@ -9,14 +9,14 @@ messages:
         +console: '§5§oConsole:Ed§f' # 0 = Console Name
     chat:  '§8{0,time,HH:mm:ss} §8<§f{1}§8>§f {2}' # 1 = Formatted Sender Name, 2 = Message
     me:    '§8{0,time,HH:mm:ss} §f* {1} {2}' # 1 = Formatted Sender Name, 2 = Message
-    tell:  '§8{0,time,HH:mm:ss} §f@§8§o{2} §8<§f{1}§8>§f {3}' # 1 = Formatted Sender Name, 2 = Formatted Recipient Name, 3 = Message
+    tell:  '§8{0,time,HH:mm:ss} §f@§8§o{2} §8<§f{1}§8>§f {3}' # 1 = Formatted Sender Name, 2 = Stripped Formatted Recipient Name, 3 = Message
     local: '§8{0,time,HH:mm:ss} #§6Local§r §8<§f{1}§8>§f {2}' # 1 = Formatted Sender Name, 2 = Message
     say:   '§8{0,time,HH:mm:ss} §8<§f{1}§8>§f {2}' # 1 = Formatted Sender Name, 2 = Message
-    join:  '§8{0,time,HH:mm:ss}§7 {1} §6joined§7 the server' # 1 = Formatted Name
-    quit:  '§8{0,time,HH:mm:ss}§7 {1} §9left§7 the server' # 1 = Formatted Name
+    join:  '§8{0,time,HH:mm:ss} §7{1} §6joined§7 the server' # 1 = Formatted Name
+    quit:  '§8{0,time,HH:mm:ss} §7{1} §9left§7 the server' # 1 = Formatted Name
     death: '§8{0,time,HH:mm:ss} {2}' # 1 = Formatted Name, 2 = Death Message
     kick: # 1 = Formatted Name, 2 = Formatted Reason
-        broadcast: '§8{0,time,HH:mm:ss}§f {1} was §ckicked§r ({2})'
+        broadcast: '§8{0,time,HH:mm:ss} §f{1} was §ckicked§f ({2})'
         +reason: '§o{0}§f' # 1 = Reason
     login: # 1 = Formatted Name, 2 = Formatted Reason
         KICK_BANNED:
@@ -24,7 +24,7 @@ messages:
         KICK_FULL:
             +reason: '§o{0}§r' # 0 = Reason
         KICK_WHITELIST:
-            broadcast: '§8{0,time,HH:mm:ss}§r §e§oDisconnected§r {1} §e§odue to whitelist'
+            broadcast: '§8{0,time,HH:mm:ss} §e§oDisconnected§f {1} §e§odue to whitelist'
             +reason: '§o{0}§r' # 0 = Reason
         KICK_OTHER:
             +reason: '§o{0}§r' # 0 = Reason
