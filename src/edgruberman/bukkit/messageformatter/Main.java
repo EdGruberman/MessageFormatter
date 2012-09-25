@@ -21,20 +21,19 @@ import edgruberman.bukkit.messageformatter.commands.Say;
 import edgruberman.bukkit.messageformatter.commands.Send;
 import edgruberman.bukkit.messageformatter.commands.Tell;
 import edgruberman.bukkit.messageformatter.messaging.ConfigurationCourier;
-import edgruberman.bukkit.messageformatter.messaging.Courier;
 import edgruberman.bukkit.messageformatter.util.CustomPlugin;
 
 public final class Main extends CustomPlugin {
 
-    public static Courier courier;
+    public static ConfigurationCourier courier;
 
     @Override
-    public void onLoad() { this.putConfigMinimum("config.yml", "5.3.0"); }
+    public void onLoad() { this.putConfigMinimum(CustomPlugin.CONFIGURATION_FILE, "5.4.0"); }
 
     @Override
     public void onEnable() {
         this.reloadConfig();
-        Main.courier = ConfigurationCourier.Factory.create(this).setBase("messages").build();
+        Main.courier = ConfigurationCourier.Factory.create(this).setColorCode("colorCode").setPath("messages").build();
 
         Bukkit.getPluginManager().registerEvents(new Formatter(this, this.getConfig().getLong("asyncPermissionCache") * 60 * 20), this);
 
@@ -58,9 +57,9 @@ public final class Main extends CustomPlugin {
     }
 
     // TODO ensure thread-safe config
-    public static String formatSender(final CommandSender sender) {
+    public static String formatName(final CommandSender sender) {
         if (sender instanceof Player)
-            return Main.courier.format("names.+player", ((Player) sender).getDisplayName());
+            return Main.courier.format("names.+player", ((Player) sender).getName(), ((Player) sender).getDisplayName());
 
         if (sender instanceof ConsoleCommandSender)
             return Main.courier.format("names.+console", sender.getName());

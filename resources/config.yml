@@ -2,9 +2,10 @@ logLevel: INFO
 localRange: 100 # blocks
 quitAfterKick: false
 asyncPermissionCache: 300 # seconds
+colorCode: '§'
 messages:
     names:
-        +player: '{0}§f' # 0 = Player Display Name
+        +player: '{1}§f' # 0 = In-Game Name, 1 = Display Name
         +other: '({0}§f)' # 0 = Sender Name
         +console: '§5§oConsole:Ed§f' # 0 = Console Name
     chat:  '§8{0,time,HH:mm:ss} §8<§f{1}§8>§f {2}' # 1 = Formatted Sender Name, 2 = Message

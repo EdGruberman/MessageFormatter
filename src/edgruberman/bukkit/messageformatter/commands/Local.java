@@ -36,7 +36,7 @@ public final class Local implements CommandExecutor {
 
         final Location origin = ((Player) sender).getLocation();
         final double range = this.plugin.getConfig().getDouble("localRange", 100.0);
-        final List<Message> messages = Main.courier.draft("local", Main.formatSender(sender), Main.translateColors(sender, args));
+        final List<Message> messages = Main.courier.compose("local", Main.formatName(sender), Main.translateColors(sender, args));
         Main.courier.submit(new LocalPlayers(origin, range), messages);
         return true;
     }

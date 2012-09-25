@@ -16,7 +16,7 @@ public final class Me implements CommandExecutor {
             return false;
         }
 
-        Main.courier.broadcast("me", Main.formatSender(sender), Main.translateColors(sender, args));
+        Main.courier.broadcast("me", Main.formatName(sender), Main.translateColors(sender, args));
         return true;
     }
 

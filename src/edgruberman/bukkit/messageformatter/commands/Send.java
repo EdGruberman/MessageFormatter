@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 import edgruberman.bukkit.messageformatter.Main;
 import edgruberman.bukkit.messageformatter.messaging.Message;
-import edgruberman.bukkit.messageformatter.messaging.Sender;
+import edgruberman.bukkit.messageformatter.messaging.Individual;
 
 public final class Send implements CommandExecutor {
 
@@ -34,7 +34,7 @@ public final class Send implements CommandExecutor {
         }
 
         final String format = Main.translateColors(sender, Arrays.copyOfRange(args, 1, args.length));
-        Main.courier.submit(new Sender(target), Message.Factory.create(format).timestamp().build());
+        Main.courier.submit(new Individual(target), Message.Factory.create(format).timestamp().build());
         return true;
     }
 

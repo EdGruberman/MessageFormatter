@@ -25,7 +25,7 @@ public class LocalPlayers extends Recipients {
                 count++;
             }
 
-        return new Confirmation(Level.FINER, count, "[LOCAL:{2}:[{3}]x={4},y={5},z={6}({1})] {0}"
+        return new Confirmation(Level.FINER, count, "[LOCAL~{2}~[{3}]x={4},y={5},z={6}({1})] {0}"
                 , message, count, Math.sqrt(this.rangeSquared), this.origin.getWorld().getName()
                 , this.origin.getBlockX(), this.origin.getBlockY(), this.origin.getBlockZ());
     }

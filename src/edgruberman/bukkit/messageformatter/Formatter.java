@@ -33,7 +33,7 @@ final class Formatter implements Listener {
         if (login.getResult() == Result.ALLOWED) return;
 
         final String reason = Main.courier.format("login." + login.getResult().name() + ".+reason", login.getKickMessage());
-        Main.courier.broadcast("login." + login.getResult().name() + ".broadcast", Main.formatSender(login.getPlayer()), reason);
+        Main.courier.broadcast("login." + login.getResult().name() + ".broadcast", Main.formatName(login.getPlayer()), reason);
         login.setKickMessage(reason);
     }
 
@@ -41,7 +41,7 @@ final class Formatter implements Listener {
     public void onPlayerJoin(final PlayerJoinEvent join) {
         if (join.getJoinMessage() == null) return;
 
-        Main.courier.broadcast("join", Main.formatSender(join.getPlayer()));
+        Main.courier.broadcast("join", Main.formatName(join.getPlayer()));
         join.setJoinMessage(null);
     }
 
@@ -56,7 +56,7 @@ final class Formatter implements Listener {
         if (this.permissions.hasPermission(custom.getPlayer().getName(), "messageformatter.colors"))
             custom.setMessage(ChatColor.translateAlternateColorCodes('&', custom.getMessage()));
 
-        Main.courier.broadcast("chat", Main.formatSender(custom.getPlayer()), custom.getMessage());
+        Main.courier.broadcast("chat", Main.formatName(custom.getPlayer()), custom.getMessage());
         chat.setCancelled(true);
     }
 
@@ -64,7 +64,7 @@ final class Formatter implements Listener {
     public void onPlayerDeath(final PlayerDeathEvent death) {
         if (death.getDeathMessage() == null) return;
 
-        Main.courier.broadcast("death", Main.formatSender(death.getEntity()), death.getDeathMessage());
+        Main.courier.broadcast("death", Main.formatName(death.getEntity()), death.getDeathMessage());
         death.setDeathMessage(null);
     }
 
@@ -74,7 +74,7 @@ final class Formatter implements Listener {
         if (kick.getLeaveMessage() == null) return;
 
         final String reason = Main.courier.format("kick.+reason", kick.getReason());
-        Main.courier.broadcast("kick.broadcast", Main.formatSender(kick.getPlayer()), reason);
+        Main.courier.broadcast("kick.broadcast", Main.formatName(kick.getPlayer()), reason);
         kick.setReason(reason);
         kick.setLeaveMessage(null);
     }
@@ -99,7 +99,7 @@ final class Formatter implements Listener {
 
         if (quit.getQuitMessage() == null) return;
 
-        Main.courier.broadcast("quit", Main.formatSender(quit.getPlayer()));
+        Main.courier.broadcast("quit", Main.formatName(quit.getPlayer()));
         quit.setQuitMessage(null);
     }
 

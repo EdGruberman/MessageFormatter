@@ -59,9 +59,9 @@ public final class Reply implements CommandExecutor, Listener {
     }
 
     void send(final CommandSender recipient, final CommandSender sender, final String message) {
-        final String senderFormatted = Main.formatSender(sender);
-        final String recipientFormatted = ChatColor.stripColor(Main.formatSender(recipient));
-        final List<Message> messages = Main.courier.draft("tell", senderFormatted, recipientFormatted, message);
+        final String senderFormatted = Main.formatName(sender);
+        final String recipientFormatted = ChatColor.stripColor(Main.formatName(recipient));
+        final List<Message> messages = Main.courier.compose("tell", senderFormatted, recipientFormatted, message);
         Main.courier.submit(new Private(sender, recipient), messages);
 
         this.fromTo.put(sender, recipient);
